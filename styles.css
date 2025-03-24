@@ -1,0 +1,503 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --maroon: #8b0000;
+  --cream: #fff5e6;
+  --black: #1a1a1a;
+  --white: #ffffff;
+}
+
+/* Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+body {
+  font-family: "Outfit", sans-serif;
+  line-height: 1.6;
+  color: var(--black);
+  background-color: var(--cream);
+  background-image: radial-gradient(
+      circle at 100% 50%,
+      transparent 20%,
+      rgba(139, 0, 0, 0.03) 21%,
+      rgba(139, 0, 0, 0.03) 34%,
+      transparent 35%,
+      transparent
+    ),
+    radial-gradient(
+      circle at 0% 50%,
+      transparent 20%,
+      rgba(139, 0, 0, 0.03) 21%,
+      rgba(139, 0, 0, 0.03) 34%,
+      transparent 35%,
+      transparent
+    );
+  background-size: 60px 120px;
+}
+
+/* Header and Navigation */
+header {
+  position: fixed;
+  width: 100%;
+  background: var(--cream);
+  z-index: 1000;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  animation: fadeInUp 0.8s ease-out;
+}
+
+nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  max-width: 70px;
+  animation: float 6s ease-in-out infinite;
+}
+
+.logo img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  gap: 4rem;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--maroon);
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+nav a:visited {
+  color: var(--maroon);
+}
+
+nav a::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: var(--maroon);
+  transition: width 0.3s ease;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+
+/* Update other link styles */
+a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: inherit;
+}
+
+/* Hero Section */
+.hero {
+  height: 100vh;
+  background: linear-gradient(rgba(128, 0, 0, 0.8), rgba(128, 0, 0, 0.8)),
+    url(bagels.jpg);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--white);
+  padding: 0 2rem;
+}
+
+.hero-content {
+  max-width: 800px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 3rem;
+  border-radius: 20px;
+  position: relative;
+  animation: fadeInUp 1s ease-out 0.5s both;
+}
+
+.hero h1 {
+  font-family: "Outfit", sans-serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.hero p {
+  font-family: "Outfit", sans-serif;
+  font-size: 1.4rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.cta-button,
+.cta-button:visited {
+  text-decoration: none;
+  display: inline-block;
+  padding: 1rem 2rem;
+  background-color: var(--white);
+  color: var(--maroon);
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border: 3px solid var(--white);
+  transform: translateY(0);
+}
+
+.cta-button:hover {
+  background-color: transparent;
+  color: var(--white);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Features Section */
+.features {
+  padding: 5rem 2rem;
+  background-color: var(--white);
+  position: relative;
+  background-image: linear-gradient(
+      30deg,
+      var(--cream) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--cream) 87.5%,
+      var(--cream)
+    ),
+    linear-gradient(
+      150deg,
+      var(--cream) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--cream) 87.5%,
+      var(--cream)
+    ),
+    linear-gradient(
+      30deg,
+      var(--cream) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--cream) 87.5%,
+      var(--cream)
+    ),
+    linear-gradient(
+      150deg,
+      var(--cream) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--cream) 87.5%,
+      var(--cream)
+    ),
+    linear-gradient(
+      60deg,
+      rgba(139, 0, 0, 0.05) 25%,
+      transparent 25.5%,
+      transparent 75%,
+      rgba(139, 0, 0, 0.05) 75%,
+      rgba(139, 0, 0, 0.05)
+    ),
+    linear-gradient(
+      60deg,
+      rgba(139, 0, 0, 0.05) 25%,
+      transparent 25.5%,
+      transparent 75%,
+      rgba(139, 0, 0, 0.05) 75%,
+      rgba(139, 0, 0, 0.05)
+    );
+  background-size: 80px 140px;
+  background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+}
+
+.features h2 {
+  font-family: "Outfit", sans-serif;
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  color: var(--maroon);
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.feature-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.feature-card {
+  background: linear-gradient(135deg, var(--cream) 0%, #fff8ef 100%);
+  padding: 2rem;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+  animation-delay: calc(var(--card-index, 0) * 0.2s);
+  border: 1px solid rgba(139, 0, 0, 0.1);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1);
+}
+
+.feature-card h3 {
+  font-family: "Outfit", sans-serif;
+  color: var(--maroon);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Menu Highlights Section */
+.menu-highlights {
+  padding: 5rem 2rem;
+  background-color: var(--maroon);
+  color: var(--white);
+  background-image: radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 60%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  background-size: 100% 100%, 8px 8px;
+}
+
+.menu-highlights h2 {
+  font-family: "Outfit", sans-serif;
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  color: var(--white);
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.menu-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.menu-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 20px;
+  text-align: center;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+  animation-delay: calc(var(--card-index, 0) * 0.2s);
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+}
+
+.menu-item:hover {
+  transform: translateY(-5px);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.menu-item h3 {
+  font-family: "Outfit", sans-serif;
+  color: var(--white);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Contact Section */
+.contact {
+  padding: 5rem 2rem;
+  background-color: var(--cream);
+  text-align: center;
+  background-image: linear-gradient(45deg, var(--maroon) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--maroon) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--maroon) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--maroon) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  background-color: var(--cream);
+  position: relative;
+}
+
+.contact::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--cream);
+  opacity: 0.97;
+}
+
+.contact h2 {
+  font-family: "Outfit", sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--maroon);
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.contact-info {
+  max-width: 600px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, var(--white) 0%, #ffffff 100%);
+  padding: 2rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+  position: relative;
+  border: 1px solid rgba(139, 0, 0, 0.1);
+}
+
+.contact-info:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info p {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  color: var(--maroon);
+}
+
+/* Footer */
+footer {
+  background-color: var(--maroon);
+  color: var(--white);
+  text-align: center;
+  padding: 2rem;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+  background-image: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.05) 25%,
+      transparent 25%
+    ),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%);
+  background-size: 10px 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  header {
+    padding: 0.75rem 0;
+  }
+
+  nav {
+    padding: 0 1.5rem;
+  }
+
+  .logo {
+    max-width: 60px;
+  }
+
+  nav ul {
+    gap: 2rem;
+  }
+
+  nav a {
+    font-size: 0.9rem;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-content {
+    padding: 2rem;
+  }
+
+  .features h2,
+  .menu-highlights h2,
+  .contact h2 {
+    font-size: 2rem;
+  }
+}
