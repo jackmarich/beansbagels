@@ -58,13 +58,13 @@
             shadow-softness="1"
             exposure="1"
             environment-image="neutral"
-            disable-zoom
-            disable-pan
-            disable-tap
+            camera-controls
             auto-rotate-delay="0"
+            interaction-policy="allow-when-focused"
             camera-orbit="0deg 60deg 105%"
-            min-camera-orbit="auto auto 105%"
-            max-camera-orbit="auto auto 105%"
+            min-camera-orbit="0deg 60deg 105%"
+            max-camera-orbit="360deg 60deg 105%"
+            interpolation-decay="200"
           ></model-viewer>
         </div>
       </section>
