@@ -80,7 +80,6 @@ nav {
 
 .logo {
   max-width: 70px;
-  animation: float 6s ease-in-out infinite;
 }
 
 .logo img {
@@ -261,10 +260,14 @@ model-viewer::part(default-progress-bar) {
 }
 
 /* Features Section */
-.features {
-  padding: 5rem 2rem;
-  background-color: var(--white);
+.features,
+.menu-highlights {
+  padding: 8rem 4rem;
   position: relative;
+}
+
+.features {
+  background-color: var(--white);
   background-image: linear-gradient(
       30deg,
       var(--cream) 12%,
@@ -374,7 +377,6 @@ model-viewer::part(default-progress-bar) {
 
 /* Menu Highlights Section */
 .menu-highlights {
-  padding: 5rem 2rem;
   background-color: var(--maroon);
   color: var(--white);
   background-image: radial-gradient(
@@ -584,4 +586,95 @@ footer {
   .contact h2 {
     font-size: 2rem;
   }
+
+  .features,
+  .menu-highlights {
+    padding: 4rem 2rem;
+  }
+
+  .section-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 2rem;
+  }
+
+  .section-content h2 {
+    font-size: 2.2rem;
+    text-align: center;
+  }
+
+  .section-content p {
+    font-size: 1.1rem;
+  }
+
+  .section-image img {
+    height: 250px;
+  }
+}
+
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+}
+
+.section-content {
+  flex: 1;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.section-content h2 {
+  font-family: "Outfit", sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: inherit;
+  text-align: left;
+}
+
+.section-content p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.section-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+
+.section-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.view-collection {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  border: 2px solid currentColor;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.view-collection:hover {
+  background-color: var(--maroon);
+  color: var(--white);
+  border-color: var(--maroon);
+}
+
+.menu-highlights .view-collection:hover {
+  background-color: var(--white);
+  color: var(--maroon);
+  border-color: var(--white);
 }
