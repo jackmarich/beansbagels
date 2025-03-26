@@ -87,7 +87,9 @@ The website is optimized for modern browsers including:
 ## Contact
 
 - Website: [eatbeansbagels.com](https://eatbeansbagels.com)
-- Email: eatbeansbagels@gmail.com
+- Email: [eatbeansbagels@gmail.com](mailto:eatbeansbagels@gmail.com)
+- Instagram: [@eatbeansbagels](https://www.instagram.com/eatbeansbagels/)
+- TikTok: [@eatbeansbagels](https://www.tiktok.com/@eatbeansbagels)
 - Hours: Weekends 10am - 2pm
 
 ## Credits
