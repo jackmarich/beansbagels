@@ -73,7 +73,7 @@ body {
 /* ======================
    Navigation & Header
    ====================== */
-/* Fixed header with subtle border and animation */
+/* Fixed header with subtle border */
 header {
   position: fixed;
   width: 100%;
@@ -81,7 +81,6 @@ header {
   z-index: 1000; /* Ensures header stays above all content */
   padding: 1rem 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  animation: fadeInUp 0.8s ease-out;
 }
 
 nav {
