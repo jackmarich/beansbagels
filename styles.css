@@ -25,12 +25,14 @@
 }
 
 @keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
+  0% {
+    transform: translateY(0px);
   }
   50% {
     transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
   }
 }
 
@@ -677,4 +679,8 @@ footer {
   background-color: var(--white);
   color: var(--maroon);
   border-color: var(--white);
+}
+
+.floating-bagel {
+  animation: float 7s ease-in-out infinite;
 }
