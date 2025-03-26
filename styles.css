@@ -545,32 +545,27 @@ footer {
 
   .hero {
     flex-direction: column;
-    padding: 5rem 1.5rem 2rem;
-    text-align: center;
-    min-height: 80vh;
+    padding: 6rem 2rem 2rem 2rem;
+    min-height: auto;
+    gap: 2rem;
   }
 
   .hero-content {
-    padding: 0;
+    text-align: center;
+    padding-top: 2rem;
   }
 
-  .hero h1 {
+  .hero-content h1 {
     font-size: 2.2rem;
-    margin-bottom: 1rem;
   }
 
-  .hero p {
+  .hero-content p {
     font-size: 1.1rem;
-    margin-bottom: 1.5rem;
   }
 
-  .hero-image {
-    margin: 2rem 0 0;
-  }
-
-  model-viewer {
-    width: 220px;
-    height: 220px;
+  .hero-image model-viewer {
+    width: 300px !important;
+    height: 300px !important;
   }
 
   .features h2,
@@ -585,14 +580,24 @@ footer {
   }
 
   .section-container {
-    flex-direction: column;
-    text-align: center;
+    flex-direction: column !important;
+    padding: 2rem;
     gap: 2rem;
+  }
+
+  .section-content {
+    text-align: center;
+    padding: 0;
+    order: 1;
+  }
+
+  .section-image {
+    order: 0;
+    width: 100%;
   }
 
   .section-content h2 {
     font-size: 2.2rem;
-    text-align: center;
   }
 
   .section-content p {
@@ -600,7 +605,10 @@ footer {
   }
 
   .section-image img {
-    height: 250px;
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: cover;
   }
 }
 
@@ -678,4 +686,125 @@ footer {
 
 .floating-bagel {
   animation: float 7s ease-in-out infinite;
+}
+
+/* Order Page Styles */
+.order-section {
+  padding-top: 120px;
+  min-height: 100vh;
+  background-color: var(--cream);
+  position: relative;
+  background-image: radial-gradient(
+      circle at 0% 0%,
+      transparent 50%,
+      rgba(139, 0, 0, 0.03) 51%,
+      rgba(139, 0, 0, 0.03) 54%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      transparent 50%,
+      rgba(139, 0, 0, 0.03) 51%,
+      rgba(139, 0, 0, 0.03) 54%,
+      transparent 55%
+    );
+  background-size: 60px 60px;
+}
+
+.order-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(45deg, var(--maroon) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--maroon) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--maroon) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--maroon) 75%);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+  opacity: 0.03;
+  z-index: 0;
+}
+
+.order-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.order-container h1 {
+  font-family: "Outfit", sans-serif;
+  color: var(--maroon);
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.8s ease-out forwards;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 700;
+}
+
+.order-container p {
+  font-family: "Outfit", sans-serif;
+  color: var(--black);
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.form-container {
+  background: linear-gradient(135deg, var(--white) 0%, #ffffff 100%);
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(139, 0, 0, 0.1);
+  margin-top: 2rem;
+  animation: fadeInUp 0.8s ease-out 0.4s forwards;
+  border: 1px solid rgba(139, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.form-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--maroon),
+    var(--cream),
+    var(--maroon)
+  );
+  opacity: 0.5;
+}
+
+.form-container iframe {
+  width: 100%;
+  min-height: 800px;
+  border: none;
+}
+
+@media (max-width: 768px) {
+  .order-section {
+    background-size: 40px 40px;
+  }
+
+  .form-container {
+    padding: 1.5rem;
+  }
+
+  .order-container h1 {
+    font-size: 2rem;
+  }
+
+  .order-container p {
+    font-size: 1.1rem;
+  }
 }
