@@ -66,8 +66,17 @@ function createOrderCard(order) {
     card.id = order.id;
     card.draggable = true;
 
+    // Add delete button if in completed column
+    const deleteButton = order.status === 'completed' ?
+        `<button class="delete-btn" onclick="deleteOrder('${order.id}')">
+            <i class="fas fa-trash"></i>
+        </button>` : '';
+
     card.innerHTML = `
-        <h3>Order #${order.id.split('-')[1]}</h3>
+        <div class="order-card-header">
+            <h3>Order #${order.id.split('-')[1]}</h3>
+            ${deleteButton}
+        </div>
         <div class="order-details">
             <p><strong>Customer:</strong> ${order.customerName}</p>
             <p><strong>Items:</strong></p>
@@ -123,10 +132,14 @@ function drop(e) {
     const order = mockOrders.find(o => o.id === orderId);
     if (order) {
         order.status = newStatus;
+        // Refresh the card to add/remove delete button
+        const newCard = createOrderCard(order);
+        // Move the card to the new column
+        column.querySelector('.column-content').appendChild(newCard);
+        // Remove the old card
+        orderCard.remove();
     }
 
-    // Move card to new column
-    column.querySelector('.column-content').appendChild(orderCard);
     updateOrderCounts();
 }
 
@@ -191,6 +204,24 @@ function showNotification(message) {
     setTimeout(() => {
         notification.remove();
     }, 3000);
+}
+
+// Delete order function
+function deleteOrder(orderId) {
+    if (confirm('Are you sure you want to delete this order?')) {
+        // Remove from mockOrders array
+        mockOrders = mockOrders.filter(order => order.id !== orderId);
+
+        // Remove from DOM
+        const orderCard = document.getElementById(orderId);
+        orderCard.classList.add('deleting');
+
+        // Animate removal
+        setTimeout(() => {
+            orderCard.remove();
+            updateOrderCounts();
+        }, 300);
+    }
 }
 
 // Add notification styles
