@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kitchen Management - Bean's Bagels</title>
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/kitchen.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="kitchen-body">
+    <!-- Login Section -->
+    <div id="login-section" class="login-container">
+      <div class="login-box">
+        <img
+          src="assets/images/tplogo.png"
+          alt="Bean's Bagels Logo"
+          class="login-logo"
+        />
+        <h2>Kitchen Management</h2>
+        <form id="login-form" onsubmit="return handleLogin(event)">
+          <div class="input-group">
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter password"
+              required
+            />
+          </div>
+          <button type="submit" class="login-btn">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Kitchen Dashboard (Hidden by default) -->
+    <div
+      id="kitchen-dashboard"
+      class="dashboard-container"
+      style="display: none"
+    >
+      <header class="kitchen-header">
+        <div class="header-content">
+          <img
+            src="assets/images/tplogo.png"
+            alt="Bean's Bagels Logo"
+            class="dashboard-logo"
+          />
+          <h1>Kitchen Dashboard</h1>
+          <button onclick="handleLogout()" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </header>
+
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <i class="fas fa-clock"></i>
+          <h3>Pending</h3>
+          <span id="pending-count">0</span>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-fire"></i>
+          <h3>In Progress</h3>
+          <span id="progress-count">0</span>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-check-circle"></i>
+          <h3>Completed</h3>
+          <span id="completed-count">0</span>
+        </div>
+      </div>
+
+      <div class="order-board">
+        <div
+          class="order-column"
+          id="not-started"
+          ondrop="drop(event)"
+          ondragover="allowDrop(event)"
+        >
+          <h2>Not Started</h2>
+          <div class="column-content"></div>
+        </div>
+        <div
+          class="order-column"
+          id="in-progress"
+          ondrop="drop(event)"
+          ondragover="allowDrop(event)"
+        >
+          <h2>In Progress</h2>
+          <div class="column-content"></div>
+        </div>
+        <div
+          class="order-column"
+          id="completed"
+          ondrop="drop(event)"
+          ondragover="allowDrop(event)"
+        >
+          <h2>Completed</h2>
+          <div class="column-content"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="assets/js/kitchen.js"></script>
+  </body>
+</html>

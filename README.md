@@ -3,38 +3,37 @@
 Welcome to Bean's Bagels - Your Campus Bagel Delivery Service! 🥯
 
 ## About
+Bean's Bagels is a campus-based bagel delivery service offering authentic New York-style bagels and delicious sandwiches. We're dedicated to serving our community with freshly made bagels and quality ingredients.
 
-Bean's Bagels is a student-run bagel delivery service operating on campus. We're dedicated to making your mornings easier by delivering fresh, authentic New York-style bagels and sandwiches straight to your dorm room. Founded in 2024, we've quickly become a beloved part of campus life, serving our community with love and the perfect breakfast.
+## Live Website
+Visit us at [eatbeansbagels.com](https://eatbeansbagels.com)
 
-**Visit us at: [eatbeansbagels.com](https://eatbeansbagels.com)**
-
-### What We Offer
-- Fresh-baked bagels delivered to your dorm
-- Authentic New York-style bagels and sandwiches
-- Weekend service from 10am - 2pm
+## What We Offer
+- Fresh, authentic New York-style bagels
+- Customizable sandwiches
+- Breakfast and lunch options
+- Weekend delivery service
 - Easy online ordering system
-- Campus-wide delivery
 
 ## Website Features
+### Customer-Facing
+- Modern, responsive design
+- Interactive 3D bagel model
+- Easy-to-use ordering system
+- Mobile-friendly interface
+- Real-time order status updates
 
-Our website is designed to make ordering as simple as possible while showcasing our brand's personality:
-
-- 🥯 Interactive 3D bagel model with floating animation
-- 📱 Fully responsive design for all screen sizes
-- 🎨 Modern UI with smooth scroll animations
-- 🚀 Fast-loading static site
-- 📝 Integrated order form system
-
-## Technologies Used
-
-- HTML5
-- CSS3 (with modern features like CSS Grid and Flexbox)
-- JavaScript (Vanilla)
-- Google's Model Viewer for 3D content
-- Google Fonts (Outfit)
+### Internal Systems
+#### Kitchen Management Dashboard (Internal Use Only)
+- Secure login system for staff
+- Real-time order tracking
+- Drag-and-drop order management
+- Status tracking (Not Started, In Progress, Completed)
+- Order statistics and monitoring
+- New order notifications
+- Mobile-responsive design
 
 ## Project Structure
-
 ```
 beansbagels/
 ├── assets/
@@ -45,47 +44,48 @@ beansbagels/
 │   ├── models/
 │   │   └── everythingbagel.glb
 │   ├── css/
-│   │   └── styles.css
+│   │   ├── styles.css
+│   │   └── kitchen.css
 │   └── js/
-│       └── animations.js
+│       ├── animations.js
+│       └── kitchen.js
 ├── index.html
-└── order.html
+├── order.html
+└── kitchen.html
 ```
 
 ## Website Sections
-
-### Navigation
-- Fixed header with smooth fade-in animations
-- Responsive navigation menu
-- Logo with home page link
-
 ### Home Page
 - Hero section with 3D bagel model
-- "Our Legacy" section showcasing our brand story and commitment to quality
-- "Our Classics" section featuring our menu highlights
-- Contact information section with business hours and contact details
+- Our Legacy section
+- Our Classics menu highlights
+- Contact information
 
 ### Order Page
-- Clean, simple order form interface
-- Google Forms integration for streamlined order management
-- Mobile-responsive design for ordering on the go
+- Menu selection
+- Customization options
+- Delivery details
+- Order confirmation
+
+### Kitchen Dashboard (Internal)
+- Secure staff access
+- Order management interface
+- Real-time updates
+- Status tracking
 
 ## Animation System
-
-The website features two types of animations to enhance user experience:
-1. Scroll-triggered animations using Intersection Observer for content sections
-2. Continuous animations for interactive elements (3D bagel model)
+- Smooth fade-in animations
+- Interactive hover effects
+- Drag-and-drop functionality
+- Mobile-friendly transitions
 
 ## Browser Support
-
-The website is optimized for modern browsers including:
-- Chrome (recommended for best 3D model experience)
+- Chrome (recommended)
 - Firefox
 - Safari
 - Edge
 
 ## Contact
-
 - Website: [eatbeansbagels.com](https://eatbeansbagels.com)
 - Email: [eatbeansbagels@gmail.com](mailto:eatbeansbagels@gmail.com)
 - Instagram: [@eatbeansbagels](https://www.instagram.com/eatbeansbagels/)
@@ -93,10 +93,9 @@ The website is optimized for modern browsers including:
 - Hours: Weekends 10am - 2pm
 
 ## Credits
-
-- 3D Model Viewer: [Google's Model Viewer](https://modelviewer.dev/)
-- Font: [Outfit from Google Fonts](https://fonts.google.com/specimen/Outfit)
+- 3D Model: Custom Everything Bagel model
+- Icons: Font Awesome
+- Fonts: Outfit (Google Fonts)
 
 ## License
-
-© 2025 Bean's Bagels. All rights reserved. 
+© 2024 Bean's Bagels. All rights reserved. 
