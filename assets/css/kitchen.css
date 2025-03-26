@@ -99,6 +99,15 @@
   margin: 0 auto;
 }
 
+.header-content a {
+  display: block;
+  transition: opacity 0.3s ease;
+}
+
+.header-content a:hover {
+  opacity: 0.8;
+}
+
 .dashboard-logo {
   width: 50px;
 }
