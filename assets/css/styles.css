@@ -29,6 +29,16 @@
   }
 }
 
+/* Simple fade in animation for nav elements */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* Floating animation for 3D bagel model */
 @keyframes float {
   0% {
@@ -94,6 +104,8 @@ nav {
 
 .logo {
   max-width: 70px;
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out forwards;
 }
 
 .logo img {
@@ -106,6 +118,8 @@ nav ul {
   display: flex;
   list-style: none;
   gap: 4rem;
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out 0.2s forwards;
 }
 
 nav a {
