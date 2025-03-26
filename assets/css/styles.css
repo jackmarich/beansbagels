@@ -88,9 +88,10 @@ header {
   position: fixed;
   width: 100%;
   background: var(--cream);
-  z-index: 1000; /* Ensures header stays above all content */
+  z-index: 1000;
   padding: 1rem 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
 nav {
@@ -100,12 +101,14 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: all 0.3s ease;
 }
 
 .logo {
   max-width: 70px;
   opacity: 0;
   animation: fadeIn 0.8s ease-out forwards;
+  transition: all 0.3s ease;
 }
 
 .logo img {
@@ -120,6 +123,7 @@ nav ul {
   gap: 4rem;
   opacity: 0;
   animation: fadeIn 0.8s ease-out 0.2s forwards;
+  transition: all 0.3s ease;
 }
 
 nav a {
@@ -160,6 +164,87 @@ a {
 
 a:visited {
   color: inherit;
+}
+
+@media (max-width: 1200px) {
+  nav {
+    padding: 0 1.5rem;
+  }
+
+  nav ul {
+    gap: 3rem;
+  }
+
+  .logo {
+    max-width: 65px;
+  }
+
+  nav a {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 992px) {
+  header {
+    padding: 0.85rem 0;
+  }
+
+  nav ul {
+    gap: 2.5rem;
+  }
+
+  .logo {
+    max-width: 62px;
+  }
+
+  nav a {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 0.75rem 0;
+  }
+
+  nav {
+    padding: 0 1.5rem;
+  }
+
+  .logo {
+    max-width: 60px;
+  }
+
+  nav ul {
+    gap: 2rem;
+  }
+
+  nav a {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 576px) {
+  header {
+    padding: 0.65rem 0;
+  }
+
+  nav {
+    padding: 0 1rem;
+  }
+
+  .logo {
+    max-width: 55px;
+  }
+
+  nav ul {
+    gap: 1.5rem;
+  }
+
+  nav a {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
 }
 
 /* ======================
@@ -894,5 +979,114 @@ footer {
 
   .order-container p {
     font-size: 1.1rem;
+  }
+}
+
+/* ======================
+   Landscape Mode Styles
+   ====================== */
+@media (max-height: 600px) and (orientation: landscape) {
+  /* Adjust header for landscape */
+  header {
+    padding: 0.5rem 0;
+  }
+
+  nav {
+    padding: 0 1rem;
+  }
+
+  .logo {
+    max-width: 45px;
+  }
+
+  nav ul {
+    gap: 1.5rem;
+  }
+
+  nav a {
+    font-size: 0.8rem;
+  }
+
+  /* Hero section landscape layout */
+  .hero {
+    padding: 4rem 2rem;
+    flex-direction: row;
+    gap: 2rem;
+    min-height: auto;
+  }
+
+  .hero-content {
+    padding-top: 1rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-image model-viewer {
+    width: 200px !important;
+    height: 200px !important;
+  }
+
+  /* Features and Menu sections landscape */
+  .features,
+  .menu-highlights {
+    padding: 3rem 2rem;
+  }
+
+  .features h2,
+  .menu-highlights h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Section containers in landscape */
+  .section-container {
+    gap: 2rem;
+    padding: 1rem;
+  }
+
+  .section-content h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-content p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-image img {
+    max-height: 250px;
+  }
+
+  /* Contact section landscape */
+  .contact {
+    padding: 3rem 2rem;
+  }
+
+  .contact h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-info p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Buttons in landscape */
+  .cta-button {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+  }
+
+  .view-collection {
+    padding: 0.5rem 1.5rem;
   }
 }
