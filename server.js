@@ -14,6 +14,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+
+// Serve static files FIRST (before routes)
 app.use(express.static('.'));
 
 // Kitchen password (hardcoded as requested)
@@ -872,7 +874,7 @@ app.post('/api/orders', async (req, res) => {
     }
 });
 
-// Serve the main pages
+// Serve the main pages (after all API routes)
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
