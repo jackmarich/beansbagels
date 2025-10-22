@@ -36,8 +36,344 @@
           Please fill out the form below to place your order. We'll prepare it
           fresh for you!
         </p>
+
+        <!-- Success/Error Messages -->
+        <div
+          id="messageContainer"
+          class="message-container"
+          style="display: none"
+        >
+          <div
+            id="successMessage"
+            class="message success"
+            style="display: none"
+          >
+            <h3>Order Received!</h3>
+            <p>
+              Thank you for your order. You'll receive an SMS confirmation
+              shortly.
+            </p>
+          </div>
+          <div id="errorMessage" class="message error" style="display: none">
+            <h3>Order Failed</h3>
+            <p id="errorText">
+              Please try again or contact us if the problem persists.
+            </p>
+          </div>
+        </div>
+
         <div class="form-container">
-          <iframe src="https://forms.gle/j4jLHqrDHdp5orhX7"></iframe>
+          <form id="orderForm">
+            <!-- Customer Information -->
+            <fieldset class="form-section">
+              <legend>Customer Information</legend>
+
+              <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required />
+              </div>
+
+              <div class="form-group">
+                <label for="building_room">Building/Room *</label>
+                <input
+                  type="text"
+                  id="building_room"
+                  name="building_room"
+                  required
+                  placeholder="Please enter your building and room number (if applicable)"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  required
+                  placeholder="(555) 123-4567"
+                />
+              </div>
+            </fieldset>
+
+            <!-- Day Selection -->
+            <fieldset class="form-section">
+              <legend>Delivery Day</legend>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="day" value="Saturday" required />
+                  <span class="radio-custom"></span>
+                  Saturday
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="day" value="Sunday" required />
+                  <span class="radio-custom"></span>
+                  Sunday
+                </label>
+              </div>
+            </fieldset>
+
+            <!-- Item Selection -->
+            <fieldset class="form-section">
+              <legend>What would you like?</legend>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="item" value="bagel" required />
+                  <span class="radio-custom"></span>
+                  Bagel ($3 + $1 spread)
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="item" value="sandwich" required />
+                  <span class="radio-custom"></span>
+                  Breakfast Sandwich ($7 + $1 hashbrown; +$2 double meat)
+                </label>
+              </div>
+            </fieldset>
+
+            <!-- Time Slot Selection -->
+            <fieldset class="form-section">
+              <legend>Delivery Time Window</legend>
+              <div class="form-group">
+                <label for="slot"
+                  >Choose your 30-minute delivery window *</label
+                >
+                <select id="slot" name="slot" required>
+                  <option value="">Select day and item first</option>
+                </select>
+              </div>
+            </fieldset>
+
+            <!-- Bagel Options (shown only when bagel is selected) -->
+            <fieldset
+              id="bagelOptions"
+              class="form-section"
+              style="display: none"
+            >
+              <legend>Bagel Customization</legend>
+
+              <div class="form-group">
+                <label>Toasted?</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="toasted" value="true" />
+                    <span class="radio-custom"></span>
+                    Yes
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="toasted" value="false" />
+                    <span class="radio-custom"></span>
+                    No
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Spread?</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="spread_choice" value="yes" />
+                    <span class="radio-custom"></span>
+                    Yes
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="spread_choice" value="no" />
+                    <span class="radio-custom"></span>
+                    No
+                  </label>
+                </div>
+                <div
+                  id="spreadOptions"
+                  class="form-group"
+                  style="display: none"
+                >
+                  <label for="spread">Choose spread:</label>
+                  <select id="spread" name="spread">
+                    <option value="Butter">Butter</option>
+                    <option value="Cream Cheese">Cream Cheese</option>
+                    <option value="None">None</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Add hash brown?</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="hashbrown" value="yes" />
+                    <span class="radio-custom"></span>
+                    Yes
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="hashbrown" value="no" />
+                    <span class="radio-custom"></span>
+                    No
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Sandwich Options (shown only when sandwich is selected) -->
+            <fieldset
+              id="sandwichOptions"
+              class="form-section"
+              style="display: none"
+            >
+              <legend>Sandwich Customization</legend>
+
+              <div class="form-group">
+                <label>Toasted?</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="toasted" value="true" />
+                    <span class="radio-custom"></span>
+                    Yes
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="toasted" value="false" />
+                    <span class="radio-custom"></span>
+                    No
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="meat">Meat *</label>
+                <select id="meat" name="meat" required>
+                  <option value="">Choose meat</option>
+                  <option value="Bacon">Bacon</option>
+                  <option value="Sausage">Sausage</option>
+                  <option value="Pork Roll/Taylor Ham">
+                    Pork Roll/Taylor Ham
+                  </option>
+                  <option value="No meat">No meat</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Extra meat?</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="extra_meat_choice" value="yes" />
+                    <span class="radio-custom"></span>
+                    Yes
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="extra_meat_choice" value="no" />
+                    <span class="radio-custom"></span>
+                    No
+                  </label>
+                </div>
+                <div
+                  id="extraMeatOptions"
+                  class="form-group"
+                  style="display: none"
+                >
+                  <label for="extra_meat">Choose extra meat:</label>
+                  <select id="extra_meat" name="extra_meat">
+                    <option value="Bacon">Bacon</option>
+                    <option value="Sausage">Sausage</option>
+                    <option value="Pork Roll/Taylor Ham">
+                      Pork Roll/Taylor Ham
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Cheese?</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="cheese" value="yes" />
+                    <span class="radio-custom"></span>
+                    Yes
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="cheese" value="no" />
+                    <span class="radio-custom"></span>
+                    No
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="egg">Egg</label>
+                <select id="egg" name="egg">
+                  <option value="Fried">Fried</option>
+                  <option value="Scrambled">Scrambled</option>
+                  <option value="No Egg">No Egg</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="hashbrown">Hash brown add-on?</label>
+                <select id="hashbrown" name="hashbrown">
+                  <option value="none">None</option>
+                  <option value="on sandwich">On sandwich</option>
+                  <option value="on side">On side</option>
+                  <option value="both">Both</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Condiments (select all that apply)</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="condiments" value="Salt" />
+                    <span class="checkbox-custom"></span>
+                    Salt
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="condiments" value="Pepper" />
+                    <span class="checkbox-custom"></span>
+                    Pepper
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="condiments" value="Ketchup" />
+                    <span class="checkbox-custom"></span>
+                    Ketchup
+                  </label>
+                  <label class="checkbox-label">
+                    <input
+                      type="checkbox"
+                      name="condiments"
+                      value="Hot Sauce"
+                    />
+                    <span class="checkbox-custom"></span>
+                    Hot Sauce
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Additional Information -->
+            <fieldset class="form-section">
+              <legend>Additional Information</legend>
+
+              <div class="form-group">
+                <label for="notes">Notes for prep (optional)</label>
+                <textarea
+                  id="notes"
+                  name="notes"
+                  rows="3"
+                  placeholder="Utensils, napkins, special requests, etc."
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" name="payment_ready" required />
+                  <span class="checkbox-custom"></span>
+                  Yes, I will be ready to pay. *
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="form-actions">
+              <button type="submit" id="submitBtn" class="submit-button">
+                Place Order
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </main>
@@ -45,5 +381,240 @@
     <footer>
       <p>&copy; 2024 Bean's Bagels. All rights reserved.</p>
     </footer>
+
+    <script>
+      // Form handling JavaScript
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("orderForm");
+        const dayInputs = document.querySelectorAll('input[name="day"]');
+        const itemInputs = document.querySelectorAll('input[name="item"]');
+        const slotSelect = document.getElementById("slot");
+        const bagelOptions = document.getElementById("bagelOptions");
+        const sandwichOptions = document.getElementById("sandwichOptions");
+        const spreadChoiceInputs = document.querySelectorAll(
+          'input[name="spread_choice"]'
+        );
+        const spreadOptions = document.getElementById("spreadOptions");
+        const extraMeatChoiceInputs = document.querySelectorAll(
+          'input[name="extra_meat_choice"]'
+        );
+        const extraMeatOptions = document.getElementById("extraMeatOptions");
+        const submitBtn = document.getElementById("submitBtn");
+        const messageContainer = document.getElementById("messageContainer");
+        const successMessage = document.getElementById("successMessage");
+        const errorMessage = document.getElementById("errorMessage");
+        const errorText = document.getElementById("errorText");
+
+        // Handle day and item changes to refresh time slots
+        function refreshSlots() {
+          const day = document.querySelector(
+            'input[name="day"]:checked'
+          )?.value;
+          const item = document.querySelector(
+            'input[name="item"]:checked'
+          )?.value;
+
+          if (!day || !item) {
+            slotSelect.innerHTML =
+              '<option value="">Select day and item first</option>';
+            return;
+          }
+
+          slotSelect.innerHTML = '<option value="">Loading...</option>';
+
+          fetch(
+            `/api/slots?day=${encodeURIComponent(
+              day
+            )}&item=${encodeURIComponent(item)}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              slotSelect.innerHTML = "";
+              data.slots.forEach((slot) => {
+                const option = document.createElement("option");
+                option.value = slot.value;
+                option.textContent =
+                  slot.label + (slot.soldOut ? " — SOLD OUT" : "");
+                option.disabled = slot.soldOut;
+                slotSelect.appendChild(option);
+              });
+            })
+            .catch((error) => {
+              console.error("Error loading slots:", error);
+              slotSelect.innerHTML =
+                '<option value="">Error loading slots</option>';
+            });
+        }
+
+        // Handle item selection to show/hide options
+        function toggleItemOptions() {
+          const selectedItem = document.querySelector(
+            'input[name="item"]:checked'
+          )?.value;
+
+          if (selectedItem === "bagel") {
+            bagelOptions.style.display = "block";
+            sandwichOptions.style.display = "none";
+            // Clear sandwich-specific required fields
+            document.getElementById("meat").required = false;
+          } else if (selectedItem === "sandwich") {
+            bagelOptions.style.display = "none";
+            sandwichOptions.style.display = "block";
+            // Set sandwich-specific required fields
+            document.getElementById("meat").required = true;
+          } else {
+            bagelOptions.style.display = "none";
+            sandwichOptions.style.display = "none";
+            document.getElementById("meat").required = false;
+          }
+        }
+
+        // Handle spread choice
+        function toggleSpreadOptions() {
+          const spreadChoice = document.querySelector(
+            'input[name="spread_choice"]:checked'
+          )?.value;
+          if (spreadChoice === "yes") {
+            spreadOptions.style.display = "block";
+          } else {
+            spreadOptions.style.display = "none";
+          }
+        }
+
+        // Handle extra meat choice
+        function toggleExtraMeatOptions() {
+          const extraMeatChoice = document.querySelector(
+            'input[name="extra_meat_choice"]:checked'
+          )?.value;
+          if (extraMeatChoice === "yes") {
+            extraMeatOptions.style.display = "block";
+          } else {
+            extraMeatOptions.style.display = "none";
+          }
+        }
+
+        // Event listeners
+        dayInputs.forEach((input) => {
+          input.addEventListener("change", refreshSlots);
+        });
+
+        itemInputs.forEach((input) => {
+          input.addEventListener("change", () => {
+            toggleItemOptions();
+            refreshSlots();
+          });
+        });
+
+        spreadChoiceInputs.forEach((input) => {
+          input.addEventListener("change", toggleSpreadOptions);
+        });
+
+        extraMeatChoiceInputs.forEach((input) => {
+          input.addEventListener("change", toggleExtraMeatOptions);
+        });
+
+        // Form submission
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Hide any previous messages
+          messageContainer.style.display = "none";
+          successMessage.style.display = "none";
+          errorMessage.style.display = "none";
+
+          // Disable submit button
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Processing...";
+
+          // Collect form data
+          const formData = new FormData(form);
+          const data = {};
+
+          // Basic fields
+          data.name = formData.get("name");
+          data.building_room = formData.get("building_room");
+          data.day = formData.get("day");
+          data.slot = formData.get("slot");
+          data.item = formData.get("item");
+          data.phone = formData.get("phone");
+          data.notes = formData.get("notes");
+          data.payment_ready = formData.has("payment_ready");
+
+          // Collect options based on item type
+          const options = {};
+
+          if (data.item === "bagel") {
+            options.toasted = formData.get("toasted") === "true";
+            const spreadChoice = formData.get("spread_choice");
+            if (spreadChoice === "yes") {
+              options.spread = formData.get("spread");
+            } else {
+              options.spread = "None";
+            }
+            options.hashbrown = formData.get("hashbrown") === "yes";
+          } else if (data.item === "sandwich") {
+            options.toasted = formData.get("toasted") === "true";
+            options.meat = formData.get("meat");
+            const extraMeatChoice = formData.get("extra_meat_choice");
+            if (extraMeatChoice === "yes") {
+              options.extra_meat = formData.get("extra_meat");
+            }
+            options.cheese = formData.get("cheese") === "yes";
+            options.egg = formData.get("egg");
+            options.hashbrown = formData.get("hashbrown");
+            options.condiments = formData.getAll("condiments");
+          }
+
+          data.options = options;
+
+          // Submit to API
+          fetch("/api/orders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((result) => {
+              if (result.error) {
+                throw new Error(result.message || result.error);
+              }
+
+              // Show success message
+              messageContainer.style.display = "block";
+              successMessage.style.display = "block";
+
+              // Reset form
+              form.reset();
+              bagelOptions.style.display = "none";
+              sandwichOptions.style.display = "none";
+              spreadOptions.style.display = "none";
+              extraMeatOptions.style.display = "none";
+              slotSelect.innerHTML =
+                '<option value="">Select day and item first</option>';
+            })
+            .catch((error) => {
+              console.error("Order error:", error);
+
+              // Show error message
+              messageContainer.style.display = "block";
+              errorMessage.style.display = "block";
+              errorText.textContent =
+                error.message || "An error occurred. Please try again.";
+            })
+            .finally(() => {
+              // Re-enable submit button
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Place Order";
+            });
+        });
+
+        // Initialize form state
+        toggleItemOptions();
+        toggleSpreadOptions();
+        toggleExtraMeatOptions();
+      });
+    </script>
   </body>
 </html>

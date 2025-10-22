@@ -3,113 +3,1279 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kitchen Management - Bean's Bagels</title>
+    <link rel="icon" type="image/png" href="assets/images/tplogo.png" />
+    <title>Kitchen Dashboard - Bean's Bagels</title>
     <link rel="stylesheet" href="assets/css/styles.css" />
-    <link rel="stylesheet" href="assets/css/kitchen.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
+    <style>
+      /* Kitchen Dashboard Styles */
+      body {
+        background: #f5f5f5;
+        font-family: "Outfit", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, var(--maroon) 0%, #a00000 100%);
+      }
+
+      .login-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        min-width: 300px;
+      }
+
+      .login-form h1 {
+        color: var(--maroon);
+        margin-bottom: 1.5rem;
+      }
+
+      .login-form input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .login-form button {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--maroon);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .login-form button:hover {
+        background: #a00000;
+      }
+
+      .error-message {
+        color: #d32f2f;
+        margin-top: 1rem;
+      }
+
+      .kitchen-dashboard {
+        display: none;
+        padding: 1rem;
+      }
+
+      .dashboard-header {
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .dashboard-header h1 {
+        color: var(--maroon);
+        margin: 0;
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .filters select,
+      .filters input {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 0.9rem;
+      }
+
+      .filters input[type="text"] {
+        min-width: 200px;
+      }
+
+      .controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: var(--maroon);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #a00000;
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #545b62;
+      }
+
+      .status-lanes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .status-lane {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        min-height: 400px;
+      }
+
+      .status-lane h3 {
+        margin: 0 0 1rem 0;
+        padding: 0.5rem;
+        border-radius: 5px;
+        text-align: center;
+        color: white;
+      }
+
+      .status-lane.queued h3 {
+        background: #6c757d;
+      }
+      .status-lane.working h3 {
+        background: #fd7e14;
+      }
+      .status-lane.ready h3 {
+        background: #198754;
+      }
+      .status-lane.handed_off h3 {
+        background: #0d6efd;
+      }
+
+      .order-card {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        cursor: move;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .order-card:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .order-card.dragging {
+        opacity: 0.5;
+        transform: rotate(5deg);
+      }
+
+      .order-card.new {
+        border-left: 4px solid #ffc107;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+        }
+      }
+
+      .order-title {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: var(--maroon);
+        margin-bottom: 0.5rem;
+      }
+
+      .order-details {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+      }
+
+      .order-modifiers {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .modifier-badge {
+        background: #e9ecef;
+        color: #495057;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-size: 0.8rem;
+      }
+
+      .modifier-badge.hot {
+        background: #dc3545;
+        color: white;
+      }
+
+      .modifier-badge.important {
+        background: #ffc107;
+        color: #000;
+      }
+
+      .order-notes {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 3px;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .order-notes.allergy {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+
+      .order-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .btn-small {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      .btn-success {
+        background: #198754;
+        color: white;
+      }
+      .btn-warning {
+        background: #ffc107;
+        color: #000;
+      }
+      .btn-info {
+        background: #0dcaf0;
+        color: #000;
+      }
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+      }
+
+      .capacity-ribbon {
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .capacity-ribbon h4 {
+        margin: 0 0 0.5rem 0;
+        color: var(--maroon);
+      }
+
+      .capacity-slots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .capacity-slot {
+        background: #f8f9fa;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        border: 1px solid #dee2e6;
+      }
+
+      .capacity-slot.full {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+
+      .capacity-slot.warning {
+        background: #fff3cd;
+        border-color: #ffeaa7;
+        color: #856404;
+      }
+
+      .sound-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .sound-toggle input[type="checkbox"] {
+        width: auto;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 2rem;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 500px;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .close {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .close:hover {
+        color: #000;
+      }
+
+      .modal-body {
+        margin-bottom: 1rem;
+      }
+
+      .modal-footer {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+      }
+
+      .empty-lane {
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+        padding: 2rem;
+      }
+
+      @media print {
+        .dashboard-header,
+        .controls,
+        .order-actions,
+        .modal {
+          display: none !important;
+        }
+
+        .order-card {
+          break-inside: avoid;
+          margin-bottom: 1rem;
+          box-shadow: none;
+          border: 1px solid #000;
+        }
+
+        .status-lanes {
+          display: block;
+        }
+
+        .status-lane {
+          margin-bottom: 2rem;
+          page-break-inside: avoid;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .dashboard-header {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .filters {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .filters input[type="text"] {
+          min-width: auto;
+        }
+
+        .status-lanes {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </head>
-  <body class="kitchen-body">
-    <!-- Login Section -->
-    <div id="login-section" class="login-container">
-      <div class="login-box">
-        <img
-          src="assets/images/tplogo.png"
-          alt="Bean's Bagels Logo"
-          class="login-logo"
+  <body>
+    <!-- Login Form -->
+    <div id="loginContainer" class="login-container">
+      <div class="login-form">
+        <h1>Kitchen Dashboard</h1>
+        <input
+          type="password"
+          id="passwordInput"
+          placeholder="Enter password"
+          autocomplete="current-password"
         />
-        <h2>Kitchen Management</h2>
-        <form id="login-form" onsubmit="return handleLogin(event)">
-          <div class="input-group">
-            <input
-              type="password"
-              id="password"
-              placeholder="Enter password"
-              required
-            />
-          </div>
-          <button type="submit" class="login-btn">Login</button>
-        </form>
+        <button onclick="login()">Login</button>
+        <div id="loginError" class="error-message" style="display: none"></div>
       </div>
     </div>
 
-    <!-- Kitchen Dashboard (Hidden by default) -->
-    <div
-      id="kitchen-dashboard"
-      class="dashboard-container"
-      style="display: none"
-    >
-      <header class="kitchen-header">
-        <div class="header-content">
-          <a href="/">
-            <img
-              src="assets/images/tplogo.png"
-              alt="Bean's Bagels Logo"
-              class="dashboard-logo"
-            />
-          </a>
-          <h1>Kitchen Dashboard</h1>
-          <button onclick="handleLogout()" class="logout-btn">
-            <i class="fas fa-sign-out-alt"></i> Logout
+    <!-- Kitchen Dashboard -->
+    <div id="kitchenDashboard" class="kitchen-dashboard">
+      <div class="dashboard-header">
+        <h1>Kitchen Dashboard</h1>
+        <div class="filters">
+          <select id="dayFilter">
+            <option value="all">All Days</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+          </select>
+          <select id="itemFilter">
+            <option value="all">All Items</option>
+            <option value="bagel">Bagels</option>
+            <option value="sandwich">Sandwiches</option>
+          </select>
+          <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="queued">Queued</option>
+            <option value="working">Working</option>
+            <option value="ready">Ready</option>
+            <option value="handed_off">Handed Off</option>
+          </select>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search name, phone, or building..."
+          />
+        </div>
+        <div class="controls">
+          <div class="sound-toggle">
+            <input type="checkbox" id="soundToggle" checked />
+            <label for="soundToggle">Sound</label>
+          </div>
+          <button class="btn btn-primary" onclick="refreshOrders()">
+            Refresh
+          </button>
+          <button class="btn btn-danger" onclick="showResetConfirmation()">
+            Reset Weekend
+          </button>
+          <button class="btn btn-secondary" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+      <div class="capacity-ribbon">
+        <h4>Bagel Capacity</h4>
+        <div id="capacitySlots" class="capacity-slots">
+          <!-- Capacity slots will be populated here -->
+        </div>
+      </div>
+
+      <div class="status-lanes">
+        <div class="status-lane queued" data-status="queued">
+          <h3>Queued</h3>
+          <div id="queuedOrders" class="orders-container">
+            <!-- Orders will be populated here -->
+          </div>
+        </div>
+        <div class="status-lane working" data-status="working">
+          <h3>Working</h3>
+          <div id="workingOrders" class="orders-container">
+            <!-- Orders will be populated here -->
+          </div>
+        </div>
+        <div class="status-lane ready" data-status="ready">
+          <h3>Ready</h3>
+          <div id="readyOrders" class="orders-container">
+            <!-- Orders will be populated here -->
+          </div>
+        </div>
+        <div class="status-lane handed_off" data-status="handed_off">
+          <h3>Handed Off</h3>
+          <div id="handedOffOrders" class="orders-container">
+            <!-- Orders will be populated here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Move Slot Modal -->
+    <div id="moveSlotModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Move Order to Different Slot</h3>
+          <span class="close" onclick="closeModal('moveSlotModal')"
+            >&times;</span
+          >
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Day:</label>
+            <select id="moveDay">
+              <option value="Saturday">Saturday</option>
+              <option value="Sunday">Sunday</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Time Slot:</label>
+            <select id="moveSlot">
+              <!-- Options will be populated -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="overrideCapacity" />
+              Override capacity limit
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="closeModal('moveSlotModal')"
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="confirmMoveSlot()">
+            Move Order
           </button>
         </div>
-      </header>
-
-      <div class="dashboard-stats">
-        <div class="stat-card">
-          <i class="fas fa-clock"></i>
-          <h3>Pending</h3>
-          <span id="pending-count">0</span>
-        </div>
-        <div class="stat-card">
-          <i class="fas fa-fire"></i>
-          <h3>In Progress</h3>
-          <span id="progress-count">0</span>
-        </div>
-        <div class="stat-card">
-          <i class="fas fa-check-circle"></i>
-          <h3>Completed</h3>
-          <span id="completed-count">0</span>
-        </div>
       </div>
+    </div>
 
-      <div class="order-board">
-        <div
-          class="order-column"
-          id="not-started"
-          ondrop="drop(event)"
-          ondragover="allowDrop(event)"
-        >
-          <h2>Not Started</h2>
-          <div class="column-content"></div>
+    <!-- SMS Modal -->
+    <div id="smsModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Send SMS</h3>
+          <span class="close" onclick="closeModal('smsModal')">&times;</span>
         </div>
-        <div
-          class="order-column"
-          id="in-progress"
-          ondrop="drop(event)"
-          ondragover="allowDrop(event)"
-        >
-          <h2>In Progress</h2>
-          <div class="column-content"></div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Message:</label>
+            <textarea
+              id="smsMessage"
+              rows="3"
+              placeholder="Your order is ready for pickup!"
+            ></textarea>
+          </div>
         </div>
-        <div
-          class="order-column"
-          id="completed"
-          ondrop="drop(event)"
-          ondragover="allowDrop(event)"
-        >
-          <h2>Completed</h2>
-          <div class="column-content"></div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('smsModal')">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="sendSMS()">Send SMS</button>
         </div>
       </div>
     </div>
 
-    <script src="assets/js/kitchen.js"></script>
+    <div id="resetModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Reset Weekend Orders</h3>
+          <span class="close" onclick="closeModal('resetModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+          <p><strong>⚠️ WARNING: This action cannot be undone!</strong></p>
+          <p>
+            This will delete ALL orders for the current weekend (Saturday and
+            Sunday).
+          </p>
+          <p>All time slots will become available again for new orders.</p>
+          <p>Are you sure you want to continue?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('resetModal')">
+            Cancel
+          </button>
+          <button class="btn btn-danger" onclick="resetWeekendOrders()">
+            Yes, Reset All Orders
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentOrders = [];
+      let currentOrderId = null;
+      let refreshInterval;
+      let lastOrderCount = 0;
+
+      // Initialize dashboard
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if already authenticated
+        checkAuth();
+
+        // Set up event listeners
+        document
+          .getElementById("passwordInput")
+          .addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              login();
+            }
+          });
+
+        document
+          .getElementById("dayFilter")
+          .addEventListener("change", refreshOrders);
+        document
+          .getElementById("itemFilter")
+          .addEventListener("change", refreshOrders);
+        document
+          .getElementById("statusFilter")
+          .addEventListener("change", refreshOrders);
+        document
+          .getElementById("searchInput")
+          .addEventListener("input", debounce(refreshOrders, 300));
+      });
+
+      // Authentication
+      async function checkAuth() {
+        try {
+          const response = await fetch("/api/kitchen/orders");
+          if (response.ok) {
+            showDashboard();
+            startAutoRefresh();
+          } else {
+            showLogin();
+          }
+        } catch (error) {
+          showLogin();
+        }
+      }
+
+      async function login() {
+        const password = document.getElementById("passwordInput").value;
+        const errorDiv = document.getElementById("loginError");
+
+        try {
+          const response = await fetch("/api/manage/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ password }),
+          });
+
+          if (response.ok) {
+            showDashboard();
+            startAutoRefresh();
+          } else {
+            const error = await response.json();
+            errorDiv.textContent = error.error || "Login failed";
+            errorDiv.style.display = "block";
+          }
+        } catch (error) {
+          errorDiv.textContent = "Network error";
+          errorDiv.style.display = "block";
+        }
+      }
+
+      async function logout() {
+        try {
+          await fetch("/api/manage/logout", { method: "POST" });
+          showLogin();
+          stopAutoRefresh();
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
+      }
+
+      function showLogin() {
+        document.getElementById("loginContainer").style.display = "flex";
+        document.getElementById("kitchenDashboard").style.display = "none";
+      }
+
+      function showDashboard() {
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("kitchenDashboard").style.display = "block";
+        refreshOrders();
+      }
+
+      // Order Management
+      async function refreshOrders() {
+        try {
+          const params = new URLSearchParams();
+          const day = document.getElementById("dayFilter").value;
+          const item = document.getElementById("itemFilter").value;
+          const status = document.getElementById("statusFilter").value;
+          const search = document.getElementById("searchInput").value;
+
+          if (day !== "all") params.append("day", day);
+          if (item !== "all") params.append("item", item);
+          if (status !== "all") params.append("status", status);
+          if (search) params.append("q", search);
+
+          const response = await fetch(`/api/kitchen/orders?${params}`);
+          if (!response.ok) {
+            if (response.status === 401) {
+              showLogin();
+              return;
+            }
+            throw new Error("Failed to fetch orders");
+          }
+
+          const data = await response.json();
+          currentOrders = data.orders;
+
+          // Check for new orders
+          if (currentOrders.length > lastOrderCount && lastOrderCount > 0) {
+            playNotificationSound();
+            showNewOrderNotification();
+          }
+          lastOrderCount = currentOrders.length;
+
+          renderOrders();
+          updateCapacityRibbon();
+        } catch (error) {
+          console.error("Error refreshing orders:", error);
+        }
+      }
+
+      function renderOrders() {
+        // Clear all lanes
+        document.querySelectorAll(".orders-container").forEach((container) => {
+          container.innerHTML = "";
+        });
+
+        // Group orders by status
+        const ordersByStatus = {
+          queued: [],
+          working: [],
+          ready: [],
+          handed_off: [],
+        };
+
+        currentOrders.forEach((order) => {
+          if (ordersByStatus[order.status]) {
+            ordersByStatus[order.status].push(order);
+          }
+        });
+
+        // Render each status lane
+        Object.keys(ordersByStatus).forEach((status) => {
+          const container = document.getElementById(`${status}Orders`);
+          const orders = ordersByStatus[status];
+
+          if (orders.length === 0) {
+            container.innerHTML = '<div class="empty-lane">No orders</div>';
+            return;
+          }
+
+          // Sort by slot time, then by creation time
+          orders.sort((a, b) => {
+            if (a.slot !== b.slot) {
+              return a.slot.localeCompare(b.slot);
+            }
+            return new Date(a.created_at) - new Date(b.created_at);
+          });
+
+          orders.forEach((order) => {
+            const orderCard = createOrderCard(order);
+            container.appendChild(orderCard);
+          });
+        });
+      }
+
+      function createOrderCard(order) {
+        const card = document.createElement("div");
+        card.className = "order-card";
+        card.draggable = true;
+        card.dataset.orderId = order.id;
+        card.dataset.status = order.status;
+
+        // Check if this is a new order (created within last 2 minutes)
+        const createdTime = new Date(order.created_at);
+        const now = new Date();
+        const isNew = now - createdTime < 2 * 60 * 1000; // 2 minutes
+        if (isNew) {
+          card.classList.add("new");
+        }
+
+        // Build order title
+        const itemName =
+          order.item === "bagel" ? "Bagel" : "Breakfast Sandwich";
+        const modifiers = buildModifiersText(order.options, order.item);
+        const title = `${itemName}${modifiers ? " — " + modifiers : ""}`;
+
+        // Build customer info
+        const customerInfo = `${order.name} • ${order.building_room} • ${order.phone}`;
+
+        // Build modifiers badges
+        const modifierBadges = buildModifierBadges(order.options, order.item);
+
+        // Build notes
+        const notesHtml = order.notes
+          ? `<div class="order-notes ${
+              hasAllergyKeywords(order.notes) ? "allergy" : ""
+            }">${order.notes}</div>`
+          : "";
+
+        // Build actions
+        const actions = buildOrderActions(order);
+
+        card.innerHTML = `
+                <div class="order-title">${title}</div>
+                <div class="order-details">
+                    <strong>${order.day} ${order.slot.replace(
+          "-",
+          "–"
+        )}</strong><br>
+                    ${customerInfo}
+                </div>
+                ${modifierBadges}
+                ${notesHtml}
+                <div class="order-actions">
+                    ${actions}
+                </div>
+            `;
+
+        // Add drag and drop functionality
+        card.addEventListener("dragstart", handleDragStart);
+        card.addEventListener("dragend", handleDragEnd);
+
+        return card;
+      }
+
+      function buildModifiersText(options, item) {
+        const modifiers = [];
+
+        if (item === "bagel") {
+          if (options.toasted) modifiers.push("Toasted");
+          if (options.spread && options.spread !== "None")
+            modifiers.push(options.spread);
+          if (options.hashbrown) modifiers.push("Hash brown");
+        } else if (item === "sandwich") {
+          if (options.toasted) modifiers.push("Toasted");
+          if (options.meat && options.meat !== "No meat")
+            modifiers.push(options.meat);
+          if (options.extra_meat) modifiers.push(`Extra ${options.extra_meat}`);
+          if (options.cheese) modifiers.push("Cheese");
+          if (options.egg && options.egg !== "No Egg")
+            modifiers.push(options.egg);
+          if (options.hashbrown && options.hashbrown !== "none")
+            modifiers.push(`Hash brown: ${options.hashbrown}`);
+          if (options.condiments && options.condiments.length > 0) {
+            modifiers.push(options.condiments.join(", "));
+          }
+        }
+
+        return modifiers.join(", ");
+      }
+
+      function buildModifierBadges(options, item) {
+        const badges = [];
+
+        if (item === "bagel") {
+          if (options.toasted)
+            badges.push(
+              '<span class="modifier-badge important">TOASTED</span>'
+            );
+          if (options.spread && options.spread !== "None") {
+            badges.push(
+              `<span class="modifier-badge">SPREAD: ${options.spread.toUpperCase()}</span>`
+            );
+          }
+          if (options.hashbrown)
+            badges.push('<span class="modifier-badge">HASH BROWN</span>');
+        } else if (item === "sandwich") {
+          if (options.toasted)
+            badges.push(
+              '<span class="modifier-badge important">TOASTED</span>'
+            );
+          if (options.condiments && options.condiments.includes("Hot Sauce")) {
+            badges.push('<span class="modifier-badge hot">HOT SAUCE</span>');
+          }
+          if (options.egg === "No Egg") {
+            badges.push('<span class="modifier-badge important">NO EGG</span>');
+          }
+          if (options.meat === "No meat") {
+            badges.push(
+              '<span class="modifier-badge important">NO MEAT</span>'
+            );
+          }
+        }
+
+        return badges.length > 0
+          ? `<div class="order-modifiers">${badges.join("")}</div>`
+          : "";
+      }
+
+      function hasAllergyKeywords(notes) {
+        const allergyKeywords = [
+          "allergy",
+          "allergic",
+          "nut",
+          "nuts",
+          "gluten",
+          "dairy",
+          "lactose",
+        ];
+        const lowerNotes = notes.toLowerCase();
+        return allergyKeywords.some((keyword) => lowerNotes.includes(keyword));
+      }
+
+      function buildOrderActions(order) {
+        const actions = [];
+
+        // Status progression buttons
+        if (order.status === "queued") {
+          actions.push(
+            `<button class="btn-small btn-success" onclick="updateOrderStatus(${order.id}, 'working')">Start</button>`
+          );
+        } else if (order.status === "working") {
+          actions.push(
+            `<button class="btn-small btn-warning" onclick="updateOrderStatus(${order.id}, 'ready')">Ready</button>`
+          );
+        } else if (order.status === "ready") {
+          actions.push(
+            `<button class="btn-small btn-info" onclick="updateOrderStatus(${order.id}, 'handed_off')">Handed Off</button>`
+          );
+          actions.push(
+            `<button class="btn-small btn-primary" onclick="openSMSModal(${order.id})">SMS</button>`
+          );
+        }
+
+        // Common actions
+        actions.push(
+          `<button class="btn-small btn-secondary" onclick="openMoveSlotModal(${order.id})">Move</button>`
+        );
+        actions.push(
+          `<button class="btn-small btn-danger" onclick="cancelOrder(${order.id})">Cancel</button>`
+        );
+
+        return actions.join("");
+      }
+
+      // Drag and Drop
+      function handleDragStart(e) {
+        e.target.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/html", e.target.outerHTML);
+      }
+
+      function handleDragEnd(e) {
+        e.target.classList.remove("dragging");
+      }
+
+      // Set up drop zones
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".status-lane").forEach((lane) => {
+          lane.addEventListener("dragover", handleDragOver);
+          lane.addEventListener("drop", handleDrop);
+        });
+      });
+
+      function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+      }
+
+      async function handleDrop(e) {
+        e.preventDefault();
+        const lane = e.currentTarget;
+        const newStatus = lane.dataset.status;
+        const draggedElement = document.querySelector(".dragging");
+
+        if (draggedElement) {
+          const orderId = draggedElement.dataset.orderId;
+          await updateOrderStatus(orderId, newStatus);
+        }
+      }
+
+      // Order Actions
+      async function updateOrderStatus(orderId, newStatus) {
+        try {
+          const response = await fetch(`/api/manage/orders/${orderId}/status`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ status: newStatus }),
+          });
+
+          if (response.ok) {
+            refreshOrders();
+          } else {
+            const error = await response.json();
+            alert("Error updating order: " + (error.error || "Unknown error"));
+          }
+        } catch (error) {
+          console.error("Error updating order status:", error);
+          alert("Network error updating order");
+        }
+      }
+
+      async function cancelOrder(orderId) {
+        if (confirm("Are you sure you want to cancel this order?")) {
+          await updateOrderStatus(orderId, "canceled");
+        }
+      }
+
+      // Move Slot Modal
+      function openMoveSlotModal(orderId) {
+        currentOrderId = orderId;
+        const order = currentOrders.find((o) => o.id == orderId);
+        if (order) {
+          document.getElementById("moveDay").value = order.day;
+          loadSlotsForMove(order.day, order.item);
+        }
+        document.getElementById("moveSlotModal").style.display = "block";
+      }
+
+      async function loadSlotsForMove(day, item) {
+        try {
+          const currentWeek = getCurrentWeek();
+          const response = await fetch(
+            `/api/manage/slots?week=${currentWeek}&day=${day}&item=${item}`
+          );
+          const data = await response.json();
+
+          const slotSelect = document.getElementById("moveSlot");
+          slotSelect.innerHTML = "";
+
+          data.slots.forEach((slot) => {
+            const option = document.createElement("option");
+            option.value = slot.slot;
+            option.textContent = `${slot.slot.replace("-", "–")} (${
+              slot.bagelsUsed
+            }/${slot.bagelsCap} bagels)`;
+            if (slot.bagelsUsed >= slot.bagelsCap && item === "bagel") {
+              option.textContent += " - FULL";
+              option.disabled = true;
+            }
+            slotSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error loading slots:", error);
+        }
+      }
+
+      async function confirmMoveSlot() {
+        if (!currentOrderId) return;
+
+        const day = document.getElementById("moveDay").value;
+        const slot = document.getElementById("moveSlot").value;
+        const overrideCapacity =
+          document.getElementById("overrideCapacity").checked;
+
+        try {
+          const response = await fetch(`/api/manage/orders/${currentOrderId}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ day, slot, overrideCapacity }),
+          });
+
+          if (response.ok) {
+            closeModal("moveSlotModal");
+            refreshOrders();
+          } else {
+            const error = await response.json();
+            alert(
+              "Error moving order: " +
+                (error.message || error.error || "Unknown error")
+            );
+          }
+        } catch (error) {
+          console.error("Error moving order:", error);
+          alert("Network error moving order");
+        }
+      }
+
+      // SMS Modal
+      function openSMSModal(orderId) {
+        currentOrderId = orderId;
+        document.getElementById("smsModal").style.display = "block";
+      }
+
+      async function sendSMS() {
+        if (!currentOrderId) return;
+
+        const message =
+          document.getElementById("smsMessage").value ||
+          "Your order is ready for pickup!";
+
+        try {
+          const response = await fetch(
+            `/api/manage/orders/${currentOrderId}/resend-sms`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ message }),
+            }
+          );
+
+          if (response.ok) {
+            closeModal("smsModal");
+            alert("SMS sent successfully!");
+          } else {
+            const error = await response.json();
+            alert("Error sending SMS: " + (error.error || "Unknown error"));
+          }
+        } catch (error) {
+          console.error("Error sending SMS:", error);
+          alert("Network error sending SMS");
+        }
+      }
+
+      // Utility Functions
+      function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+      }
+
+      function showResetConfirmation() {
+        document.getElementById("resetModal").style.display = "block";
+      }
+
+      async function resetWeekendOrders() {
+        try {
+          const response = await fetch("/api/manage/reset-weekend", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            // Show success message
+            alert(
+              `✅ Reset successful! Deleted ${result.deletedCount} orders.`
+            );
+
+            // Close modal
+            closeModal("resetModal");
+
+            // Refresh orders to show empty state
+            await refreshOrders();
+          } else {
+            alert(`❌ Error: ${result.error || "Failed to reset orders"}`);
+          }
+        } catch (error) {
+          console.error("Reset error:", error);
+          alert("❌ Error: Failed to reset orders. Please try again.");
+        }
+      }
+
+      function getCurrentWeek() {
+        const now = new Date();
+        const nyDate = new Date(
+          now.toLocaleString("en-US", { timeZone: "America/New_York" })
+        );
+        const dayOfWeek = nyDate.getDay();
+        const monday = new Date(nyDate);
+        monday.setDate(
+          nyDate.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)
+        );
+        return monday.toISOString().split("T")[0];
+      }
+
+      function updateCapacityRibbon() {
+        // This would show bagel capacity for visible slots
+        // Implementation depends on your specific needs
+      }
+
+      function playNotificationSound() {
+        if (document.getElementById("soundToggle").checked) {
+          // Simple beep sound
+          const audio = new Audio(
+            "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT"
+          );
+          audio.play().catch((e) => console.log("Could not play sound:", e));
+        }
+      }
+
+      function showNewOrderNotification() {
+        // Simple notification - could be enhanced with toast notifications
+        console.log("New order received!");
+      }
+
+      function startAutoRefresh() {
+        refreshInterval = setInterval(refreshOrders, 5000); // Refresh every 5 seconds
+      }
+
+      function stopAutoRefresh() {
+        if (refreshInterval) {
+          clearInterval(refreshInterval);
+        }
+      }
+
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      // Close modals when clicking outside
+      window.onclick = function (event) {
+        const modals = document.querySelectorAll(".modal");
+        modals.forEach((modal) => {
+          if (event.target === modal) {
+            modal.style.display = "none";
+          }
+        });
+      };
+    </script>
   </body>
 </html>
