@@ -1,0 +1,1340 @@
+/* ======================
+   CSS Variables & Reset
+   ====================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --maroon: #8b0000;
+  --cream: #fff5e6;
+  --black: #1a1a1a;
+  --white: #ffffff;
+}
+
+/* ======================
+   Animation Keyframes
+   ====================== */
+/* Fade in and move up animation for content sections */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Simple fade in animation for nav elements */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Floating animation for 3D bagel model */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* ======================
+   Base Styles & Background
+   ====================== */
+body {
+  font-family: "Outfit", sans-serif;
+  line-height: 1.6;
+  color: var(--black);
+  background-color: var(--cream);
+  /* Complex radial gradient pattern for subtle background texture */
+  background-image: radial-gradient(
+      circle at 100% 50%,
+      transparent 20%,
+      rgba(139, 0, 0, 0.03) 21%,
+      rgba(139, 0, 0, 0.03) 34%,
+      transparent 35%,
+      transparent
+    ),
+    radial-gradient(
+      circle at 0% 50%,
+      transparent 20%,
+      rgba(139, 0, 0, 0.03) 21%,
+      rgba(139, 0, 0, 0.03) 34%,
+      transparent 35%,
+      transparent
+    );
+  background-size: 60px 120px;
+}
+
+/* ======================
+   Navigation & Header
+   ====================== */
+/* Fixed header with subtle border */
+header {
+  position: fixed;
+  width: 100%;
+  background: var(--cream);
+  z-index: 1000;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.logo {
+  max-width: 70px;
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out forwards;
+  transition: all 0.3s ease;
+}
+
+.logo img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  gap: 4rem;
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out 0.2s forwards;
+  transition: all 0.3s ease;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--maroon);
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+nav a:visited {
+  color: var(--maroon);
+}
+
+nav a::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: var(--maroon);
+  transition: width 0.3s ease;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+
+/* Update other link styles */
+a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: inherit;
+}
+
+@media (max-width: 1200px) {
+  nav {
+    padding: 0 1.5rem;
+  }
+
+  nav ul {
+    gap: 3rem;
+  }
+
+  .logo {
+    max-width: 65px;
+  }
+
+  nav a {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 992px) {
+  header {
+    padding: 0.85rem 0;
+  }
+
+  nav ul {
+    gap: 2.5rem;
+  }
+
+  .logo {
+    max-width: 62px;
+  }
+
+  nav a {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 0.75rem 0;
+  }
+
+  nav {
+    padding: 0 1.5rem;
+  }
+
+  .logo {
+    max-width: 60px;
+  }
+
+  nav ul {
+    gap: 2rem;
+  }
+
+  nav a {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 576px) {
+  header {
+    padding: 0.65rem 0;
+  }
+
+  nav {
+    padding: 0 1rem;
+  }
+
+  .logo {
+    max-width: 55px;
+  }
+
+  nav ul {
+    gap: 1.5rem;
+  }
+
+  nav a {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+}
+
+/* ======================
+   Hero Section
+   ====================== */
+/* Main hero section with complex background patterns */
+.hero {
+  min-height: 100vh;
+  background-color: var(--maroon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  padding: 6rem 3rem; /* Extra top padding to account for fixed header */
+  position: relative;
+  overflow: hidden;
+  /* Layered background patterns for depth */
+  background-image: radial-gradient(
+      circle at 20% 20%,
+      rgba(255, 245, 230, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(255, 245, 230, 0.05) 0%,
+      transparent 50%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 245, 230, 0.02) 0%,
+      rgba(255, 245, 230, 0.02) 1px,
+      transparent 1px,
+      transparent 10px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 245, 230, 0.02) 0%,
+      rgba(255, 245, 230, 0.02) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(
+      45deg,
+      rgba(255, 245, 230, 0.03) 25%,
+      transparent 25%
+    ),
+    linear-gradient(-45deg, rgba(255, 245, 230, 0.03) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 245, 230, 0.03) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 245, 230, 0.03) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  opacity: 0.5;
+}
+
+.hero-content {
+  max-width: 500px;
+  z-index: 2;
+  padding: 1rem;
+  animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+
+.hero h1 {
+  font-family: "Outfit", sans-serif;
+  font-size: 3.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  color: var(--white);
+}
+
+.hero p {
+  font-size: 1.3rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  color: var(--cream);
+}
+
+.hero-image {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInUp 0.8s ease-out 0.7s both;
+}
+
+/* ======================
+   3D Model Viewer Styles
+   ====================== */
+/* Custom styling for the 3D bagel model */
+model-viewer {
+  width: 300px;
+  height: 300px;
+  --poster-color: transparent;
+  background-color: transparent;
+  /* Hide default model-viewer UI elements */
+  --progress-bar-height: 0px;
+  --progress-bar-color: transparent;
+  --progress-mask: transparent;
+}
+
+/* Hide the loading poster */
+model-viewer::part(default-progress-bar) {
+  display: none;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  background-color: var(--cream);
+  color: var(--maroon);
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border: 3px solid var(--cream);
+  transform: translateY(0);
+}
+
+.cta-button:hover {
+  background-color: transparent;
+  color: var(--cream);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* ======================
+   Features Section
+   ====================== */
+.features,
+.menu-highlights {
+  padding: 8rem 4rem;
+  position: relative;
+}
+
+.features {
+  background-color: var(--white);
+  background-image: linear-gradient(
+      30deg,
+      var(--cream) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--cream) 87.5%,
+      var(--cream)
+    ),
+    linear-gradient(
+      150deg,
+      var(--cream) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--cream) 87.5%,
+      var(--cream)
+    ),
+    linear-gradient(
+      30deg,
+      var(--cream) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--cream) 87.5%,
+      var(--cream)
+    ),
+    linear-gradient(
+      150deg,
+      var(--cream) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--cream) 87.5%,
+      var(--cream)
+    ),
+    linear-gradient(
+      60deg,
+      rgba(139, 0, 0, 0.05) 25%,
+      transparent 25.5%,
+      transparent 75%,
+      rgba(139, 0, 0, 0.05) 75%,
+      rgba(139, 0, 0, 0.05)
+    ),
+    linear-gradient(
+      60deg,
+      rgba(139, 0, 0, 0.05) 25%,
+      transparent 25.5%,
+      transparent 75%,
+      rgba(139, 0, 0, 0.05) 75%,
+      rgba(139, 0, 0, 0.05)
+    );
+  background-size: 80px 140px;
+  background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+}
+
+.features h2 {
+  font-family: "Outfit", sans-serif;
+  text-align: left;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  color: var(--maroon);
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.feature-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.feature-card {
+  background: linear-gradient(135deg, var(--cream) 0%, #fff8ef 100%);
+  padding: 2rem;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+  animation-delay: calc(var(--card-index, 0) * 0.2s);
+  border: 1px solid rgba(139, 0, 0, 0.1);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1);
+}
+
+.feature-card h3 {
+  font-family: "Outfit", sans-serif;
+  color: var(--maroon);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* ======================
+   Menu Highlights Section
+   ====================== */
+.menu-highlights {
+  background-color: var(--maroon);
+  color: var(--white);
+  background-image: radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 60%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  background-size: 100% 100%, 8px 8px;
+}
+
+.menu-highlights h2 {
+  font-family: "Outfit", sans-serif;
+  text-align: left;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  color: var(--white);
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.menu-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.menu-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 20px;
+  text-align: center;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+  animation-delay: calc(var(--card-index, 0) * 0.2s);
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+}
+
+.menu-item:hover {
+  transform: translateY(-5px);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.menu-item h3 {
+  font-family: "Outfit", sans-serif;
+  color: var(--white);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.menu-highlights .section-content {
+  text-align: left;
+}
+
+.features .section-content {
+  text-align: left;
+}
+
+.features .section-content h2,
+.menu-highlights .section-content h2 {
+  text-align: left;
+}
+
+/* ======================
+   Contact Section
+   ====================== */
+.contact {
+  padding: 5rem 2rem;
+  background-color: var(--cream);
+  text-align: center;
+  background-image: linear-gradient(45deg, var(--maroon) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--maroon) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--maroon) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--maroon) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  background-color: var(--cream);
+  position: relative;
+}
+
+.contact::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--cream);
+  opacity: 0.97;
+}
+
+.contact h2 {
+  font-family: "Outfit", sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  color: var(--maroon);
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.contact-info {
+  max-width: 800px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.contact-info p {
+  margin-bottom: 2rem;
+  font-size: 1.3rem;
+  color: var(--maroon);
+  line-height: 1.8;
+}
+
+.contact-info a {
+  color: var(--maroon);
+  text-decoration: underline;
+  transition: all 0.3s ease;
+}
+
+.contact-info a:hover {
+  opacity: 0.8;
+}
+
+/* ======================
+   Footer
+   ====================== */
+footer {
+  background-color: var(--maroon);
+  color: var(--white);
+  text-align: center;
+  padding: 2rem;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+  background-image: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.05) 25%,
+      transparent 25%
+    ),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%);
+  background-size: 10px 10px;
+}
+
+/* ======================
+   Responsive Design
+   ====================== */
+@media (max-width: 768px) {
+  /* Adjust header for mobile */
+  header {
+    padding: 0.75rem 0;
+  }
+
+  /* Mobile navigation adjustments */
+  nav {
+    padding: 0 1.5rem;
+  }
+
+  .logo {
+    max-width: 60px;
+  }
+
+  nav ul {
+    gap: 2rem;
+  }
+
+  nav a {
+    font-size: 0.9rem;
+  }
+
+  /* Hero section mobile layout */
+  .hero {
+    flex-direction: column;
+    padding: 6rem 2rem 2rem 2rem;
+    min-height: auto;
+    gap: 2rem;
+  }
+
+  .hero-content {
+    text-align: center;
+    padding-top: 2rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-content p {
+    font-size: 1.1rem;
+  }
+
+  .hero-image model-viewer {
+    width: 300px !important;
+    height: 300px !important;
+  }
+
+  .features h2,
+  .menu-highlights h2,
+  .contact h2 {
+    font-size: 2rem;
+  }
+
+  .features,
+  .menu-highlights {
+    padding: 4rem 2rem;
+  }
+
+  /* Section container mobile layout */
+  .section-container {
+    flex-direction: column !important;
+    padding: 2rem;
+    gap: 2rem;
+  }
+
+  /* Center all text on mobile */
+  .features h2,
+  .menu-highlights h2,
+  .section-content h2,
+  .section-content p,
+  .features .section-content,
+  .menu-highlights .section-content {
+    text-align: center !important;
+  }
+
+  /* Control stacking order on mobile */
+  .section-content {
+    text-align: center;
+    padding: 0;
+    order: 1;
+  }
+
+  .section-image {
+    order: 0;
+    width: 100%;
+  }
+
+  .section-image img {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: cover;
+  }
+}
+
+/* ======================
+   Section Layouts
+   ====================== */
+/* Common container for feature sections */
+.section-container {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.features .section-container {
+  flex-direction: row;
+}
+
+.section-content {
+  flex: 1;
+}
+
+.section-content h2 {
+  font-family: "Outfit", sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: inherit;
+}
+
+.features .section-content h2 {
+  text-align: left;
+}
+
+.section-content p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.section-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+
+.section-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.view-collection {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  border: 2px solid currentColor;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.view-collection:hover {
+  background-color: var(--maroon);
+  color: var(--white);
+  border-color: var(--maroon);
+}
+
+.menu-highlights .view-collection:hover {
+  background-color: var(--white);
+  color: var(--maroon);
+  border-color: var(--white);
+}
+
+/* ======================
+   Interactive Elements
+   ====================== */
+/* Animation for 3D bagel */
+.floating-bagel {
+  animation: float 7s ease-in-out infinite;
+}
+
+/* ======================
+   Order Page Styles
+   ====================== */
+.order-section {
+  padding-top: 120px;
+  min-height: 100vh;
+  background-color: var(--cream);
+  position: relative;
+  background-image: radial-gradient(
+      circle at 0% 0%,
+      transparent 50%,
+      rgba(139, 0, 0, 0.03) 51%,
+      rgba(139, 0, 0, 0.03) 54%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      transparent 50%,
+      rgba(139, 0, 0, 0.03) 51%,
+      rgba(139, 0, 0, 0.03) 54%,
+      transparent 55%
+    );
+  background-size: 60px 60px;
+}
+
+.order-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(45deg, var(--maroon) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--maroon) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--maroon) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--maroon) 75%);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+  opacity: 0.03;
+  z-index: 0;
+}
+
+.order-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.order-container h1 {
+  font-family: "Outfit", sans-serif;
+  color: var(--maroon);
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.8s ease-out forwards;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 700;
+}
+
+.order-container p {
+  font-family: "Outfit", sans-serif;
+  color: var(--black);
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Message Container */
+.message-container {
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.message {
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.message.success {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.message h3 {
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+/* Form Container */
+.form-container {
+  background: linear-gradient(135deg, var(--white) 0%, #ffffff 100%);
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(139, 0, 0, 0.1);
+  margin-top: 2rem;
+  animation: fadeInUp 0.8s ease-out 0.4s forwards;
+  border: 1px solid rgba(139, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+}
+
+.form-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--maroon),
+    var(--cream),
+    var(--maroon)
+  );
+  opacity: 0.5;
+}
+
+/* Form Sections */
+.form-section {
+  margin-bottom: 2rem;
+  border: 1px solid rgba(139, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.form-section legend {
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  color: var(--maroon);
+  font-size: 1.2rem;
+  padding: 0 0.5rem;
+  background: var(--white);
+  border-radius: 5px;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+/* Form Inputs */
+input[type="text"],
+input[type="tel"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid rgba(139, 0, 0, 0.2);
+  border-radius: 8px;
+  font-family: "Outfit", sans-serif;
+  font-size: 1rem;
+  background: var(--white);
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="tel"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--maroon);
+  box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Radio Groups */
+.radio-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--black);
+  transition: all 0.3s ease;
+}
+
+.radio-label:hover {
+  color: var(--maroon);
+}
+
+.radio-label input[type="radio"] {
+  display: none;
+}
+
+.radio-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(139, 0, 0, 0.3);
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom {
+  border-color: var(--maroon);
+  background: var(--maroon);
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--white);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Checkbox Groups */
+.checkbox-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--black);
+  transition: all 0.3s ease;
+}
+
+.checkbox-label:hover {
+  color: var(--maroon);
+}
+
+.checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(139, 0, 0, 0.3);
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+  border-color: var(--maroon);
+  background: var(--maroon);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: var(--white);
+  font-weight: bold;
+  font-size: 12px;
+  transform: translate(-50%, -50%);
+}
+
+/* Form Actions */
+.form-actions {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(139, 0, 0, 0.1);
+}
+
+.submit-button {
+  background: linear-gradient(135deg, var(--maroon) 0%, #a00000 100%);
+  color: var(--white);
+  border: none;
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 0, 0, 0.4);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Form Styles */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 1.5rem;
+  }
+
+  .form-section {
+    padding: 1rem;
+  }
+
+  .radio-group,
+  .checkbox-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .submit-button {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .order-section {
+    background-size: 40px 40px;
+  }
+
+  .form-container {
+    padding: 1.5rem;
+  }
+
+  .order-container h1 {
+    font-size: 2rem;
+  }
+
+  .order-container p {
+    font-size: 1.1rem;
+  }
+}
+
+/* ======================
+   Landscape Mode Styles
+   ====================== */
+@media (max-height: 600px) and (orientation: landscape) {
+  /* Adjust header for landscape */
+  header {
+    padding: 0.5rem 0;
+  }
+
+  nav {
+    padding: 0 1rem;
+  }
+
+  .logo {
+    max-width: 45px;
+  }
+
+  nav ul {
+    gap: 1.5rem;
+  }
+
+  nav a {
+    font-size: 0.8rem;
+  }
+
+  /* Hero section landscape layout */
+  .hero {
+    padding: 4rem 2rem;
+    flex-direction: row;
+    gap: 2rem;
+    min-height: auto;
+  }
+
+  .hero-content {
+    padding-top: 1rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-image model-viewer {
+    width: 200px !important;
+    height: 200px !important;
+  }
+
+  /* Features and Menu sections landscape */
+  .features,
+  .menu-highlights {
+    padding: 3rem 2rem;
+  }
+
+  .features h2,
+  .menu-highlights h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Section containers in landscape */
+  .section-container {
+    gap: 2rem;
+    padding: 1rem;
+  }
+
+  .section-content h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-content p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-image img {
+    max-height: 250px;
+  }
+
+  /* Contact section landscape */
+  .contact {
+    padding: 3rem 2rem;
+  }
+
+  .contact h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-info p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Buttons in landscape */
+  .cta-button {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+  }
+
+  .view-collection {
+    padding: 0.5rem 1.5rem;
+  }
+}

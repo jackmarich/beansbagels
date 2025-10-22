@@ -16,6 +16,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Serve static files FIRST (before routes)
+app.use(express.static('public'));
 app.use(express.static(__dirname));
 
 // Kitchen password (hardcoded as requested)
