@@ -169,17 +169,17 @@ function getWeekKey(date = new Date()) {
 function normalizePhoneNumber(phone) {
     // Remove all non-digit characters
     const digits = phone.replace(/\D/g, '');
-    
+
     // If it starts with 1 and has 11 digits, remove the 1
     if (digits.length === 11 && digits.startsWith('1')) {
         return '+' + digits;
     }
-    
+
     // If it has 10 digits, add +1
     if (digits.length === 10) {
         return '+1' + digits;
     }
-    
+
     // Otherwise, add + if not present
     return digits.startsWith('+') ? digits : '+' + digits;
 }
@@ -187,7 +187,7 @@ function normalizePhoneNumber(phone) {
 // Helper function to calculate order total
 function calculateOrderTotal(item, options) {
     let total = 0;
-    
+
     if (item === 'bagel') {
         total = 300; // $3.00 base price
         if (options.spread && options.spread !== 'None') {
@@ -205,17 +205,17 @@ function calculateOrderTotal(item, options) {
             total += 100; // +$1.00 for hash brown
         }
     }
-    
+
     return total;
 }
 
 // Kitchen Authentication
 app.post('/api/manage/login', (req, res) => {
     const { password } = req.body;
-    
+
     if (password === KITCHEN_PASSWORD) {
         const sessionToken = crypto.createHash('sha256').update(KITCHEN_PASSWORD + SESSION_SECRET).digest('hex');
-        
+
         res.cookie('mgmt', sessionToken, {
             httpOnly: true,
             secure: false, // Set to true in production with HTTPS
@@ -237,7 +237,7 @@ app.get('/api/kitchen/orders', requireAuth, async (req, res) => {
     try {
         const { week, day, item, slot, status, q, limit = 100 } = req.query;
         const weekKey = week || getWeekKey();
-        
+
         if (isProduction) {
             // Supabase query
             let query = supabase
@@ -247,7 +247,7 @@ app.get('/api/kitchen/orders', requireAuth, async (req, res) => {
                 .order('slot', { ascending: true })
                 .order('created_at', { ascending: true })
                 .limit(parseInt(limit));
-            
+
             if (day && day !== 'all') {
                 query = query.eq('day', day);
             }
@@ -263,20 +263,20 @@ app.get('/api/kitchen/orders', requireAuth, async (req, res) => {
             if (q) {
                 query = query.or(`name.ilike.%${q}%,phone.ilike.%${q}%,building_room.ilike.%${q}%`);
             }
-            
+
             const { data, error } = await query;
-            
+
             if (error) {
                 console.error('Supabase error:', error);
                 return res.status(500).json({ error: 'Database error' });
             }
-            
+
             const orders = data.map(order => ({
                 ...order,
                 options: JSON.parse(order.options),
                 last_updated: order.created_at
             }));
-            
+
             res.json({ orders });
         } else {
             // SQLite query
@@ -287,52 +287,52 @@ app.get('/api/kitchen/orders', requireAuth, async (req, res) => {
                 WHERE 1=1
             `;
             const params = [];
-            
+
             if (weekKey) {
                 query += ' AND week_key = ?';
                 params.push(weekKey);
             }
-            
+
             if (day && day !== 'all') {
                 query += ' AND day = ?';
                 params.push(day);
             }
-            
+
             if (item && item !== 'all') {
                 query += ' AND item = ?';
                 params.push(item);
             }
-            
+
             if (slot) {
                 query += ' AND slot = ?';
                 params.push(slot);
             }
-            
+
             if (status && status !== 'all') {
                 query += ' AND status = ?';
                 params.push(status);
             }
-            
+
             if (q) {
                 query += ' AND (name LIKE ? OR phone LIKE ? OR building_room LIKE ?)';
                 const searchTerm = `%${q}%`;
                 params.push(searchTerm, searchTerm, searchTerm);
             }
-            
+
             query += ' ORDER BY slot, created_at LIMIT ?';
             params.push(parseInt(limit));
-            
+
             db.all(query, params, (err, rows) => {
                 if (err) {
                     console.error('Database error:', err);
                     return res.status(500).json({ error: 'Database error' });
                 }
-                
+
                 const orders = rows.map(order => ({
                     ...order,
                     options: JSON.parse(order.options)
                 }));
-                
+
                 res.json({ orders });
             });
         }
@@ -346,14 +346,14 @@ app.get('/api/kitchen/orders', requireAuth, async (req, res) => {
 app.patch('/api/manage/orders/:id/status', requireAuth, async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
-    
+
     try {
         if (isProduction) {
             const { error } = await supabase
                 .from('orders')
                 .update({ status })
                 .eq('id', id);
-            
+
             if (error) {
                 console.error('Supabase error:', error);
                 return res.status(500).json({ error: 'Database error' });
@@ -370,7 +370,7 @@ app.patch('/api/manage/orders/:id/status', requireAuth, async (req, res) => {
                 }
             );
         }
-        
+
         res.json({ success: true });
     } catch (error) {
         console.error('Database error:', error);
@@ -382,12 +382,12 @@ app.patch('/api/manage/orders/:id/status', requireAuth, async (req, res) => {
 app.patch('/api/manage/orders/:id', requireAuth, async (req, res) => {
     const { id } = req.params;
     const { day, slot, item, overrideCapacity = false } = req.body;
-    
+
     try {
         // If moving a bagel order to a different slot, check capacity
         if (item === 'bagel' && !overrideCapacity) {
             const weekKey = getWeekKey();
-            
+
             if (isProduction) {
                 const { count, error } = await supabase
                     .from('orders')
@@ -395,12 +395,12 @@ app.patch('/api/manage/orders/:id', requireAuth, async (req, res) => {
                     .eq('day', day)
                     .eq('slot', slot)
                     .eq('week_key', weekKey);
-                
+
                 if (error) {
                     console.error('Supabase error:', error);
                     return res.status(500).json({ error: 'Database error' });
                 }
-                
+
                 if (count >= 6) {
                     return res.status(409).json({
                         error: 'SLOT_SOLD_OUT',
@@ -416,7 +416,7 @@ app.patch('/api/manage/orders/:id', requireAuth, async (req, res) => {
                             console.error('Database error:', err);
                             return res.status(500).json({ error: 'Database error' });
                         }
-                        
+
                         if (result.count >= 6) {
                             return res.status(409).json({
                                 error: 'SLOT_SOLD_OUT',
@@ -427,18 +427,18 @@ app.patch('/api/manage/orders/:id', requireAuth, async (req, res) => {
                 );
             }
         }
-        
+
         const updateData = {};
         if (day) updateData.day = day;
         if (slot) updateData.slot = slot;
         if (item) updateData.item = item;
-        
+
         if (isProduction) {
             const { error } = await supabase
                 .from('orders')
                 .update(updateData)
                 .eq('id', id);
-            
+
             if (error) {
                 console.error('Supabase error:', error);
                 return res.status(500).json({ error: 'Database error' });
@@ -446,7 +446,7 @@ app.patch('/api/manage/orders/:id', requireAuth, async (req, res) => {
         } else {
             const updateFields = [];
             const params = [];
-            
+
             if (day) {
                 updateFields.push('day = ?');
                 params.push(day);
@@ -459,7 +459,7 @@ app.patch('/api/manage/orders/:id', requireAuth, async (req, res) => {
                 updateFields.push('item = ?');
                 params.push(item);
             }
-            
+
             if (updateFields.length > 0) {
                 params.push(id);
                 db.run(
@@ -474,7 +474,7 @@ app.patch('/api/manage/orders/:id', requireAuth, async (req, res) => {
                 );
             }
         }
-        
+
         res.json({ success: true });
     } catch (error) {
         console.error('Database error:', error);
@@ -486,22 +486,22 @@ app.patch('/api/manage/orders/:id', requireAuth, async (req, res) => {
 app.post('/api/manage/orders/:id/resend-sms', requireAuth, async (req, res) => {
     const { id } = req.params;
     const { message } = req.body;
-    
+
     try {
         let order;
-        
+
         if (isProduction) {
             const { data, error } = await supabase
                 .from('orders')
                 .select('*')
                 .eq('id', id)
                 .single();
-            
+
             if (error) {
                 console.error('Supabase error:', error);
                 return res.status(500).json({ error: 'Database error' });
             }
-            
+
             order = data;
         } else {
             order = await new Promise((resolve, reject) => {
@@ -511,20 +511,20 @@ app.post('/api/manage/orders/:id/resend-sms', requireAuth, async (req, res) => {
                 });
             });
         }
-        
+
         if (!order) {
             return res.status(404).json({ error: 'Order not found' });
         }
-        
+
         if (twilioClient) {
             const smsMessage = message || `Your order is ready for pickup! ${order.item} for ${order.day} ${order.slot}.`;
-            
+
             await twilioClient.messages.create({
                 body: smsMessage,
                 from: process.env.TWILIO_PHONE_NUMBER,
                 to: order.phone
             });
-            
+
             res.json({ success: true, message: 'SMS sent successfully' });
         } else {
             res.status(500).json({ error: 'SMS not configured' });
@@ -538,14 +538,14 @@ app.post('/api/manage/orders/:id/resend-sms', requireAuth, async (req, res) => {
 // Delete order
 app.delete('/api/manage/orders/:id', requireAuth, async (req, res) => {
     const { id } = req.params;
-    
+
     try {
         if (isProduction) {
             const { error } = await supabase
                 .from('orders')
                 .delete()
                 .eq('id', id);
-            
+
             if (error) {
                 console.error('Supabase error:', error);
                 return res.status(500).json({ error: 'Database error' });
@@ -558,7 +558,7 @@ app.delete('/api/manage/orders/:id', requireAuth, async (req, res) => {
                 }
             });
         }
-        
+
         res.json({ success: true });
     } catch (error) {
         console.error('Database error:', error);
@@ -569,7 +569,7 @@ app.delete('/api/manage/orders/:id', requireAuth, async (req, res) => {
 // Reset weekend orders (delete all orders for current week)
 app.post('/api/manage/reset-weekend', requireAuth, async (req, res) => {
     const weekKey = getWeekKey();
-    
+
     try {
         if (isProduction) {
             const { count, error } = await supabase
@@ -577,14 +577,14 @@ app.post('/api/manage/reset-weekend', requireAuth, async (req, res) => {
                 .delete()
                 .eq('week_key', weekKey)
                 .select('*', { count: 'exact' });
-            
+
             if (error) {
                 console.error('Supabase error:', error);
                 return res.status(500).json({ error: 'Database error' });
             }
-            
-            res.json({ 
-                success: true, 
+
+            res.json({
+                success: true,
                 message: `Reset complete. Deleted ${count} orders for week ${weekKey}`,
                 deletedCount: count
             });
@@ -594,9 +594,9 @@ app.post('/api/manage/reset-weekend', requireAuth, async (req, res) => {
                     console.error('Database error:', err);
                     return res.status(500).json({ error: 'Database error' });
                 }
-                
-                res.json({ 
-                    success: true, 
+
+                res.json({
+                    success: true,
                     message: `Reset complete. Deleted ${this.changes} orders for week ${weekKey}`,
                     deletedCount: this.changes
                 });
@@ -612,18 +612,18 @@ app.post('/api/manage/reset-weekend', requireAuth, async (req, res) => {
 app.get('/api/manage/slots', requireAuth, async (req, res) => {
     const { week, day, item } = req.query;
     const weekKey = week || getWeekKey();
-    
+
     try {
         const slots = [
             '10:00-10:30', '10:30-11:00', '11:00-11:30', '11:30-12:00',
             '12:00-12:30', '12:30-13:00', '13:00-13:30', '13:30-14:00'
         ];
-        
+
         const results = [];
-        
+
         for (const slot of slots) {
             let count = 0;
-            
+
             if (isProduction) {
                 const { count: slotCount, error } = await supabase
                     .from('orders')
@@ -631,7 +631,7 @@ app.get('/api/manage/slots', requireAuth, async (req, res) => {
                     .eq('day', day)
                     .eq('slot', slot)
                     .eq('week_key', weekKey);
-                
+
                 if (error) {
                     console.error('Supabase error:', error);
                     count = 0;
@@ -651,14 +651,14 @@ app.get('/api/manage/slots', requireAuth, async (req, res) => {
                 });
                 count = result.count;
             }
-            
+
             results.push({
                 slot,
                 bagelsUsed: count,
                 bagelsCap: 6
             });
         }
-        
+
         res.json({ slots: results });
     } catch (error) {
         console.error('Database error:', error);
@@ -670,22 +670,22 @@ app.get('/api/manage/slots', requireAuth, async (req, res) => {
 app.get('/api/slots', async (req, res) => {
     const { day, item } = req.query;
     const weekKey = getWeekKey();
-    
+
     if (!day || !item) {
         return res.status(400).json({ error: 'Day and item are required' });
     }
-    
+
     try {
         const slots = [
             '10:00-10:30', '10:30-11:00', '11:00-11:30', '11:30-12:00',
             '12:00-12:30', '12:30-13:00', '13:00-13:30', '13:30-14:00'
         ];
-        
+
         const results = [];
-        
+
         for (const slot of slots) {
             let count = 0;
-            
+
             if (isProduction) {
                 const { count: slotCount, error } = await supabase
                     .from('orders')
@@ -693,7 +693,7 @@ app.get('/api/slots', async (req, res) => {
                     .eq('day', day)
                     .eq('slot', slot)
                     .eq('week_key', weekKey);
-                
+
                 if (error) {
                     console.error('Supabase error:', error);
                     count = 0;
@@ -713,14 +713,14 @@ app.get('/api/slots', async (req, res) => {
                 });
                 count = result.count;
             }
-            
+
             results.push({
                 label: slot.replace('-', '–'),
                 value: slot,
                 soldOut: count >= 6
             });
         }
-        
+
         res.json({
             day,
             item,
@@ -735,26 +735,26 @@ app.get('/api/slots', async (req, res) => {
 // POST /api/orders - Create a new order
 app.post('/api/orders', async (req, res) => {
     const { name, building_room, day, slot, item, options, notes, phone, payment_ready } = req.body;
-    
+
     // Validate required fields
     const requiredFields = ['name', 'building_room', 'day', 'slot', 'item', 'phone', 'payment_ready'];
     const missingFields = requiredFields.filter(field => !req.body[field]);
-    
+
     if (missingFields.length > 0) {
         return res.status(400).json({
             error: 'Missing required fields',
             missing: missingFields
         });
     }
-    
+
     try {
         const weekKey = getWeekKey();
         const normalizedPhone = normalizePhoneNumber(phone);
         const totalCents = calculateOrderTotal(item, options);
-        
+
         // Check capacity before inserting
         let count = 0;
-        
+
         if (isProduction) {
             const { count: slotCount, error } = await supabase
                 .from('orders')
@@ -762,12 +762,12 @@ app.post('/api/orders', async (req, res) => {
                 .eq('day', day)
                 .eq('slot', slot)
                 .eq('week_key', weekKey);
-            
+
             if (error) {
                 console.error('Supabase error:', error);
                 return res.status(500).json({ error: 'Database error' });
             }
-            
+
             count = slotCount;
         } else {
             const result = await new Promise((resolve, reject) => {
@@ -782,14 +782,14 @@ app.post('/api/orders', async (req, res) => {
             });
             count = result.count;
         }
-        
+
         if (count >= 6) {
             return res.status(409).json({
                 error: 'SLOT_SOLD_OUT',
                 message: 'That slot just sold out — please pick another time'
             });
         }
-        
+
         // Insert the order
         const orderData = {
             day,
@@ -805,21 +805,21 @@ app.post('/api/orders', async (req, res) => {
             week_key: weekKey,
             status: 'queued'
         };
-        
+
         let orderId;
-        
+
         if (isProduction) {
             const { data, error } = await supabase
                 .from('orders')
                 .insert([orderData])
                 .select()
                 .single();
-            
+
             if (error) {
                 console.error('Supabase error:', error);
                 return res.status(500).json({ error: 'Database error' });
             }
-            
+
             orderId = data.id;
         } else {
             orderId = await new Promise((resolve, reject) => {
@@ -834,7 +834,7 @@ app.post('/api/orders', async (req, res) => {
                 );
             });
         }
-        
+
         // Send SMS confirmation
         let smsStatus = 'not_configured';
         if (twilioClient) {
@@ -854,7 +854,7 @@ app.post('/api/orders', async (req, res) => {
         } else {
             console.log('SMS not configured - skipping SMS');
         }
-        
+
         res.status(201).json({
             orderId,
             status: 'received',
@@ -870,6 +870,11 @@ app.post('/api/orders', async (req, res) => {
         console.error('Database error:', error);
         res.status(500).json({ error: 'Database error' });
     }
+});
+
+// Serve the main page
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
 });
 
 // Start server
