@@ -1,6 +1,6 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
-const { sql } = require('@vercel/postgres');
+const { createClient } = require('@supabase/supabase-js');
 const cors = require('cors');
 const twilio = require('twilio');
 const cookieParser = require('cookie-parser');
@@ -20,83 +20,28 @@ app.use(express.static('.'));
 const KITCHEN_PASSWORD = 'lafayette';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'beansbagels-secret-key';
 
-// Database setup - use SQLite for local development, PostgreSQL for production
+// Database setup - use SQLite for local development, Supabase for production
 const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
 let db = null;
+let supabase = null;
 
 if (isProduction) {
-    console.log('Using Vercel Postgres for production');
+    console.log('Using Supabase for production');
+    supabase = createClient(
+        process.env.SUPABASE_URL,
+        process.env.SUPABASE_ANON_KEY
+    );
 } else {
     db = new sqlite3.Database('./orders.db');
     console.log('Using SQLite for local development');
-}
-
-// Database helper functions
-async function dbQuery(query, params = []) {
-    if (isProduction) {
-        return await sql.query(query, params);
-    } else {
-        return new Promise((resolve, reject) => {
-            db.all(query, params, (err, rows) => {
-                if (err) reject(err);
-                else resolve({ rows });
-            });
-        });
-    }
-}
-
-async function dbGet(query, params = []) {
-    if (isProduction) {
-        const result = await sql.query(query, params);
-        return result.rows[0] || null;
-    } else {
-        return new Promise((resolve, reject) => {
-            db.get(query, params, (err, row) => {
-                if (err) reject(err);
-                else resolve(row);
-            });
-        });
-    }
-}
-
-async function dbRun(query, params = []) {
-    if (isProduction) {
-        const result = await sql.query(query, params);
-        return { changes: result.rowCount || 0, lastID: result.insertId || null };
-    } else {
-        return new Promise((resolve, reject) => {
-            db.run(query, params, function(err) {
-                if (err) reject(err);
-                else resolve({ changes: this.changes, lastID: this.lastID });
-            });
-        });
-    }
 }
 
 // Create tables
 async function createTables() {
     try {
         if (isProduction) {
-            // PostgreSQL table creation
-            await sql`
-                CREATE TABLE IF NOT EXISTS orders (
-                    id SERIAL PRIMARY KEY,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    day TEXT NOT NULL CHECK (day IN ('Saturday', 'Sunday')),
-                    slot TEXT NOT NULL,
-                    item TEXT NOT NULL CHECK (item IN ('bagel', 'sandwich')),
-                    options TEXT NOT NULL,
-                    name TEXT NOT NULL,
-                    building_room TEXT NOT NULL,
-                    phone TEXT NOT NULL,
-                    notes TEXT,
-                    payment_ready BOOLEAN NOT NULL,
-                    total_cents INTEGER NOT NULL,
-                    week_key TEXT NOT NULL,
-                    status TEXT DEFAULT 'queued' CHECK (status IN ('queued', 'working', 'ready', 'handed_off', 'canceled', 'no_show')),
-                    kitchen_notes TEXT
-                )
-            `;
+            // Supabase tables are created via the dashboard
+            console.log('Supabase tables should be created via dashboard');
         } else {
             // SQLite table creation
             await new Promise((resolve, reject) => {
@@ -293,55 +238,104 @@ app.get('/api/kitchen/orders', requireAuth, async (req, res) => {
         const { week, day, item, slot, status, q, limit = 100 } = req.query;
         const weekKey = week || getWeekKey();
         
-        let query = `
-            SELECT id, created_at, day, slot, item, options, name, building_room, phone, notes, 
-                   payment_ready, total_cents, week_key, status, kitchen_notes, created_at as last_updated
-            FROM orders 
-            WHERE 1=1
-        `;
-        const params = [];
-        
-        if (weekKey) {
-            query += ' AND week_key = ?';
-            params.push(weekKey);
+        if (isProduction) {
+            // Supabase query
+            let query = supabase
+                .from('orders')
+                .select('*')
+                .eq('week_key', weekKey)
+                .order('slot', { ascending: true })
+                .order('created_at', { ascending: true })
+                .limit(parseInt(limit));
+            
+            if (day && day !== 'all') {
+                query = query.eq('day', day);
+            }
+            if (item && item !== 'all') {
+                query = query.eq('item', item);
+            }
+            if (slot) {
+                query = query.eq('slot', slot);
+            }
+            if (status && status !== 'all') {
+                query = query.eq('status', status);
+            }
+            if (q) {
+                query = query.or(`name.ilike.%${q}%,phone.ilike.%${q}%,building_room.ilike.%${q}%`);
+            }
+            
+            const { data, error } = await query;
+            
+            if (error) {
+                console.error('Supabase error:', error);
+                return res.status(500).json({ error: 'Database error' });
+            }
+            
+            const orders = data.map(order => ({
+                ...order,
+                options: JSON.parse(order.options),
+                last_updated: order.created_at
+            }));
+            
+            res.json({ orders });
+        } else {
+            // SQLite query
+            let query = `
+                SELECT id, created_at, day, slot, item, options, name, building_room, phone, notes, 
+                       payment_ready, total_cents, week_key, status, kitchen_notes, created_at as last_updated
+                FROM orders 
+                WHERE 1=1
+            `;
+            const params = [];
+            
+            if (weekKey) {
+                query += ' AND week_key = ?';
+                params.push(weekKey);
+            }
+            
+            if (day && day !== 'all') {
+                query += ' AND day = ?';
+                params.push(day);
+            }
+            
+            if (item && item !== 'all') {
+                query += ' AND item = ?';
+                params.push(item);
+            }
+            
+            if (slot) {
+                query += ' AND slot = ?';
+                params.push(slot);
+            }
+            
+            if (status && status !== 'all') {
+                query += ' AND status = ?';
+                params.push(status);
+            }
+            
+            if (q) {
+                query += ' AND (name LIKE ? OR phone LIKE ? OR building_room LIKE ?)';
+                const searchTerm = `%${q}%`;
+                params.push(searchTerm, searchTerm, searchTerm);
+            }
+            
+            query += ' ORDER BY slot, created_at LIMIT ?';
+            params.push(parseInt(limit));
+            
+            db.all(query, params, (err, rows) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ error: 'Database error' });
+                }
+                
+                const orders = rows.map(order => ({
+                    ...order,
+                    options: JSON.parse(order.options)
+                }));
+                
+                res.json({ orders });
+            });
         }
-        
-        if (day && day !== 'all') {
-            query += ' AND day = ?';
-            params.push(day);
-        }
-        
-        if (item && item !== 'all') {
-            query += ' AND item = ?';
-            params.push(item);
-        }
-        
-        if (slot) {
-            query += ' AND slot = ?';
-            params.push(slot);
-        }
-        
-        if (status && status !== 'all') {
-            query += ' AND status = ?';
-            params.push(status);
-        }
-        
-        if (q) {
-            query += ' AND (name LIKE ? OR phone LIKE ? OR building_room LIKE ?)';
-            const searchTerm = `%${q}%`;
-            params.push(searchTerm, searchTerm, searchTerm);
-        }
-        
-        query += ' ORDER BY slot, created_at LIMIT ?';
-        params.push(parseInt(limit));
-        
-        const result = await dbQuery(query, params);
-        const orders = result.rows.map(order => ({
-            ...order,
-            options: JSON.parse(order.options)
-        }));
-        
-        res.json({ orders });
     } catch (error) {
         console.error('Database error:', error);
         res.status(500).json({ error: 'Database error' });
@@ -354,10 +348,28 @@ app.patch('/api/manage/orders/:id/status', requireAuth, async (req, res) => {
     const { status } = req.body;
     
     try {
-        await dbRun(
-            'UPDATE orders SET status = ? WHERE id = ?',
-            [status, id]
-        );
+        if (isProduction) {
+            const { error } = await supabase
+                .from('orders')
+                .update({ status })
+                .eq('id', id);
+            
+            if (error) {
+                console.error('Supabase error:', error);
+                return res.status(500).json({ error: 'Database error' });
+            }
+        } else {
+            db.run(
+                'UPDATE orders SET status = ? WHERE id = ?',
+                [status, id],
+                (err) => {
+                    if (err) {
+                        console.error('Database error:', err);
+                        return res.status(500).json({ error: 'Database error' });
+                    }
+                }
+            );
+        }
         
         res.json({ success: true });
     } catch (error) {
@@ -375,46 +387,95 @@ app.patch('/api/manage/orders/:id', requireAuth, async (req, res) => {
         // If moving a bagel order to a different slot, check capacity
         if (item === 'bagel' && !overrideCapacity) {
             const weekKey = getWeekKey();
-            const countResult = await dbGet(
-                'SELECT COUNT(*) as count FROM orders WHERE day = ? AND slot = ? AND week_key = ?',
-                [day, slot, weekKey]
-            );
             
-            if (countResult.count >= 6) {
-                return res.status(409).json({
-                    error: 'SLOT_SOLD_OUT',
-                    message: 'That slot is full. Use overrideCapacity=true to force the move.'
-                });
+            if (isProduction) {
+                const { count, error } = await supabase
+                    .from('orders')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('day', day)
+                    .eq('slot', slot)
+                    .eq('week_key', weekKey);
+                
+                if (error) {
+                    console.error('Supabase error:', error);
+                    return res.status(500).json({ error: 'Database error' });
+                }
+                
+                if (count >= 6) {
+                    return res.status(409).json({
+                        error: 'SLOT_SOLD_OUT',
+                        message: 'That slot is full. Use overrideCapacity=true to force the move.'
+                    });
+                }
+            } else {
+                db.get(
+                    'SELECT COUNT(*) as count FROM orders WHERE day = ? AND slot = ? AND week_key = ?',
+                    [day, slot, weekKey],
+                    (err, result) => {
+                        if (err) {
+                            console.error('Database error:', err);
+                            return res.status(500).json({ error: 'Database error' });
+                        }
+                        
+                        if (result.count >= 6) {
+                            return res.status(409).json({
+                                error: 'SLOT_SOLD_OUT',
+                                message: 'That slot is full. Use overrideCapacity=true to force the move.'
+                            });
+                        }
+                    }
+                );
             }
         }
         
-        const updateFields = [];
-        const params = [];
+        const updateData = {};
+        if (day) updateData.day = day;
+        if (slot) updateData.slot = slot;
+        if (item) updateData.item = item;
         
-        if (day) {
-            updateFields.push('day = ?');
-            params.push(day);
-        }
-        if (slot) {
-            updateFields.push('slot = ?');
-            params.push(slot);
-        }
-        if (item) {
-            updateFields.push('item = ?');
-            params.push(item);
-        }
-        
-        if (updateFields.length > 0) {
-            params.push(id);
-            await dbRun(
-                `UPDATE orders SET ${updateFields.join(', ')} WHERE id = ?`,
-                params
-            );
+        if (isProduction) {
+            const { error } = await supabase
+                .from('orders')
+                .update(updateData)
+                .eq('id', id);
             
-            res.json({ success: true });
+            if (error) {
+                console.error('Supabase error:', error);
+                return res.status(500).json({ error: 'Database error' });
+            }
         } else {
-            res.status(400).json({ error: 'No fields to update' });
+            const updateFields = [];
+            const params = [];
+            
+            if (day) {
+                updateFields.push('day = ?');
+                params.push(day);
+            }
+            if (slot) {
+                updateFields.push('slot = ?');
+                params.push(slot);
+            }
+            if (item) {
+                updateFields.push('item = ?');
+                params.push(item);
+            }
+            
+            if (updateFields.length > 0) {
+                params.push(id);
+                db.run(
+                    `UPDATE orders SET ${updateFields.join(', ')} WHERE id = ?`,
+                    params,
+                    (err) => {
+                        if (err) {
+                            console.error('Database error:', err);
+                            return res.status(500).json({ error: 'Database error' });
+                        }
+                    }
+                );
+            }
         }
+        
+        res.json({ success: true });
     } catch (error) {
         console.error('Database error:', error);
         res.status(500).json({ error: 'Database error' });
@@ -427,7 +488,29 @@ app.post('/api/manage/orders/:id/resend-sms', requireAuth, async (req, res) => {
     const { message } = req.body;
     
     try {
-        const order = await dbGet('SELECT * FROM orders WHERE id = ?', [id]);
+        let order;
+        
+        if (isProduction) {
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('id', id)
+                .single();
+            
+            if (error) {
+                console.error('Supabase error:', error);
+                return res.status(500).json({ error: 'Database error' });
+            }
+            
+            order = data;
+        } else {
+            order = await new Promise((resolve, reject) => {
+                db.get('SELECT * FROM orders WHERE id = ?', [id], (err, row) => {
+                    if (err) reject(err);
+                    else resolve(row);
+                });
+            });
+        }
         
         if (!order) {
             return res.status(404).json({ error: 'Order not found' });
@@ -457,7 +540,25 @@ app.delete('/api/manage/orders/:id', requireAuth, async (req, res) => {
     const { id } = req.params;
     
     try {
-        await dbRun('DELETE FROM orders WHERE id = ?', [id]);
+        if (isProduction) {
+            const { error } = await supabase
+                .from('orders')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                console.error('Supabase error:', error);
+                return res.status(500).json({ error: 'Database error' });
+            }
+        } else {
+            db.run('DELETE FROM orders WHERE id = ?', [id], (err) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ error: 'Database error' });
+                }
+            });
+        }
+        
         res.json({ success: true });
     } catch (error) {
         console.error('Database error:', error);
@@ -470,13 +571,37 @@ app.post('/api/manage/reset-weekend', requireAuth, async (req, res) => {
     const weekKey = getWeekKey();
     
     try {
-        const result = await dbRun('DELETE FROM orders WHERE week_key = ?', [weekKey]);
-        
-        res.json({ 
-            success: true, 
-            message: `Reset complete. Deleted ${result.changes} orders for week ${weekKey}`,
-            deletedCount: result.changes
-        });
+        if (isProduction) {
+            const { count, error } = await supabase
+                .from('orders')
+                .delete()
+                .eq('week_key', weekKey)
+                .select('*', { count: 'exact' });
+            
+            if (error) {
+                console.error('Supabase error:', error);
+                return res.status(500).json({ error: 'Database error' });
+            }
+            
+            res.json({ 
+                success: true, 
+                message: `Reset complete. Deleted ${count} orders for week ${weekKey}`,
+                deletedCount: count
+            });
+        } else {
+            db.run('DELETE FROM orders WHERE week_key = ?', [weekKey], function (err) {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ error: 'Database error' });
+                }
+                
+                res.json({ 
+                    success: true, 
+                    message: `Reset complete. Deleted ${this.changes} orders for week ${weekKey}`,
+                    deletedCount: this.changes
+                });
+            });
+        }
     } catch (error) {
         console.error('Database error:', error);
         res.status(500).json({ error: 'Database error' });
@@ -489,70 +614,52 @@ app.get('/api/manage/slots', requireAuth, async (req, res) => {
     const weekKey = week || getWeekKey();
     
     try {
-        if (isProduction) {
-            // For PostgreSQL, we'll use a simplified approach
-            const slots = [
-                '10:00-10:30', '10:30-11:00', '11:00-11:30', '11:30-12:00',
-                '12:00-12:30', '12:30-13:00', '13:00-13:30', '13:30-14:00'
-            ];
+        const slots = [
+            '10:00-10:30', '10:30-11:00', '11:00-11:30', '11:30-12:00',
+            '12:00-12:30', '12:30-13:00', '13:00-13:30', '13:30-14:00'
+        ];
+        
+        const results = [];
+        
+        for (const slot of slots) {
+            let count = 0;
             
-            const results = [];
-            for (const slot of slots) {
-                const countResult = await dbGet(
-                    'SELECT COUNT(*) as count FROM orders WHERE day = ? AND slot = ? AND week_key = ?',
-                    [day, slot, weekKey]
-                );
+            if (isProduction) {
+                const { count: slotCount, error } = await supabase
+                    .from('orders')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('day', day)
+                    .eq('slot', slot)
+                    .eq('week_key', weekKey);
                 
-                results.push({
-                    slot,
-                    bagelsUsed: countResult.count,
-                    bagelsCap: 6
+                if (error) {
+                    console.error('Supabase error:', error);
+                    count = 0;
+                } else {
+                    count = slotCount;
+                }
+            } else {
+                const result = await new Promise((resolve, reject) => {
+                    db.get(
+                        'SELECT COUNT(*) as count FROM orders WHERE day = ? AND slot = ? AND week_key = ?',
+                        [day, slot, weekKey],
+                        (err, row) => {
+                            if (err) reject(err);
+                            else resolve(row);
+                        }
+                    );
                 });
+                count = result.count;
             }
             
-            res.json({ slots: results });
-        } else {
-            // SQLite version
-            db.all(
-                'SELECT slot FROM time_slots WHERE day = ? ORDER BY slot',
-                [day],
-                (err, timeSlots) => {
-                    if (err) {
-                        console.error('Database error:', err);
-                        return res.status(500).json({ error: 'Database error' });
-                    }
-                    
-                    const slotChecks = timeSlots.map(slotData => {
-                        return new Promise((resolve) => {
-                            db.get(
-                                'SELECT COUNT(*) as count FROM orders WHERE day = ? AND slot = ? AND week_key = ?',
-                                [day, slotData.slot, weekKey],
-                                (err, result) => {
-                                    if (err) {
-                                        console.error('Database error:', err);
-                                        resolve({
-                                            slot: slotData.slot,
-                                            bagelsUsed: 0,
-                                            bagelsCap: 6
-                                        });
-                                    } else {
-                                        resolve({
-                                            slot: slotData.slot,
-                                            bagelsUsed: result.count,
-                                            bagelsCap: 6
-                                        });
-                                    }
-                                }
-                            );
-                        });
-                    });
-                    
-                    Promise.all(slotChecks).then(results => {
-                        res.json({ slots: results });
-                    });
-                }
-            );
+            results.push({
+                slot,
+                bagelsUsed: count,
+                bagelsCap: 6
+            });
         }
+        
+        res.json({ slots: results });
     } catch (error) {
         console.error('Database error:', error);
         res.status(500).json({ error: 'Database error' });
@@ -569,82 +676,56 @@ app.get('/api/slots', async (req, res) => {
     }
     
     try {
-        if (isProduction) {
-            // For PostgreSQL, use hardcoded slots
-            const slots = [
-                '10:00-10:30', '10:30-11:00', '11:00-11:30', '11:30-12:00',
-                '12:00-12:30', '12:30-13:00', '13:00-13:30', '13:30-14:00'
-            ];
+        const slots = [
+            '10:00-10:30', '10:30-11:00', '11:00-11:30', '11:30-12:00',
+            '12:00-12:30', '12:30-13:00', '13:00-13:30', '13:30-14:00'
+        ];
+        
+        const results = [];
+        
+        for (const slot of slots) {
+            let count = 0;
             
-            const results = [];
-            for (const slot of slots) {
-                const countResult = await dbGet(
-                    'SELECT COUNT(*) as count FROM orders WHERE day = ? AND slot = ? AND week_key = ?',
-                    [day, slot, weekKey]
-                );
+            if (isProduction) {
+                const { count: slotCount, error } = await supabase
+                    .from('orders')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('day', day)
+                    .eq('slot', slot)
+                    .eq('week_key', weekKey);
                 
-                results.push({
-                    label: slot.replace('-', '–'),
-                    value: slot,
-                    soldOut: countResult.count >= 6
+                if (error) {
+                    console.error('Supabase error:', error);
+                    count = 0;
+                } else {
+                    count = slotCount;
+                }
+            } else {
+                const result = await new Promise((resolve, reject) => {
+                    db.get(
+                        'SELECT COUNT(*) as count FROM orders WHERE day = ? AND slot = ? AND week_key = ?',
+                        [day, slot, weekKey],
+                        (err, row) => {
+                            if (err) reject(err);
+                            else resolve(row);
+                        }
+                    );
                 });
+                count = result.count;
             }
             
-            res.json({
-                day,
-                item,
-                slots: results
+            results.push({
+                label: slot.replace('-', '–'),
+                value: slot,
+                soldOut: count >= 6
             });
-        } else {
-            // SQLite version
-            db.all(
-                'SELECT slot FROM time_slots WHERE day = ? ORDER BY slot',
-                [day],
-                (err, timeSlots) => {
-                    if (err) {
-                        console.error('Database error:', err);
-                        return res.status(500).json({ error: 'Database error' });
-                    }
-                    
-                    const slotChecks = timeSlots.map(slotData => {
-                        return new Promise((resolve) => {
-                            db.get(
-                                'SELECT COUNT(*) as count FROM orders WHERE day = ? AND slot = ? AND week_key = ?',
-                                [day, slotData.slot, weekKey],
-                                (err, result) => {
-                                    if (err) {
-                                        console.error('Database error:', err);
-                                        resolve({
-                                            ...slotData,
-                                            soldOut: false
-                                        });
-                                    } else {
-                                        resolve({
-                                            ...slotData,
-                                            soldOut: result.count >= 6
-                                        });
-                                    }
-                                }
-                            );
-                        });
-                    });
-                    
-                    Promise.all(slotChecks).then(results => {
-                        const formattedSlots = results.map(slot => ({
-                            label: slot.slot.replace('-', '–'),
-                            value: slot.slot,
-                            soldOut: slot.soldOut
-                        }));
-                        
-                        res.json({
-                            day,
-                            item,
-                            slots: formattedSlots
-                        });
-                    });
-                }
-            );
         }
+        
+        res.json({
+            day,
+            item,
+            slots: results
+        });
     } catch (error) {
         console.error('Database error:', error);
         res.status(500).json({ error: 'Database error' });
@@ -672,12 +753,37 @@ app.post('/api/orders', async (req, res) => {
         const totalCents = calculateOrderTotal(item, options);
         
         // Check capacity before inserting
-        const countResult = await dbGet(
-            'SELECT COUNT(*) as count FROM orders WHERE day = ? AND slot = ? AND week_key = ?',
-            [day, slot, weekKey]
-        );
+        let count = 0;
         
-        if (countResult.count >= 6) {
+        if (isProduction) {
+            const { count: slotCount, error } = await supabase
+                .from('orders')
+                .select('*', { count: 'exact', head: true })
+                .eq('day', day)
+                .eq('slot', slot)
+                .eq('week_key', weekKey);
+            
+            if (error) {
+                console.error('Supabase error:', error);
+                return res.status(500).json({ error: 'Database error' });
+            }
+            
+            count = slotCount;
+        } else {
+            const result = await new Promise((resolve, reject) => {
+                db.get(
+                    'SELECT COUNT(*) as count FROM orders WHERE day = ? AND slot = ? AND week_key = ?',
+                    [day, slot, weekKey],
+                    (err, row) => {
+                        if (err) reject(err);
+                        else resolve(row);
+                    }
+                );
+            });
+            count = result.count;
+        }
+        
+        if (count >= 6) {
             return res.status(409).json({
                 error: 'SLOT_SOLD_OUT',
                 message: 'That slot just sold out — please pick another time'
@@ -685,11 +791,49 @@ app.post('/api/orders', async (req, res) => {
         }
         
         // Insert the order
-        const result = await dbRun(
-            `INSERT INTO orders (day, slot, item, options, name, building_room, phone, notes, payment_ready, total_cents, week_key, status)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'queued')`,
-            [day, slot, item, JSON.stringify(options), name, building_room, normalizedPhone, notes, payment_ready, totalCents, weekKey]
-        );
+        const orderData = {
+            day,
+            slot,
+            item,
+            options: JSON.stringify(options),
+            name,
+            building_room,
+            phone: normalizedPhone,
+            notes,
+            payment_ready,
+            total_cents: totalCents,
+            week_key: weekKey,
+            status: 'queued'
+        };
+        
+        let orderId;
+        
+        if (isProduction) {
+            const { data, error } = await supabase
+                .from('orders')
+                .insert([orderData])
+                .select()
+                .single();
+            
+            if (error) {
+                console.error('Supabase error:', error);
+                return res.status(500).json({ error: 'Database error' });
+            }
+            
+            orderId = data.id;
+        } else {
+            orderId = await new Promise((resolve, reject) => {
+                db.run(
+                    `INSERT INTO orders (day, slot, item, options, name, building_room, phone, notes, payment_ready, total_cents, week_key, status)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [day, slot, item, JSON.stringify(options), name, building_room, normalizedPhone, notes, payment_ready, totalCents, weekKey, 'queued'],
+                    function (err) {
+                        if (err) reject(err);
+                        else resolve(this.lastID);
+                    }
+                );
+            });
+        }
         
         // Send SMS confirmation
         let smsStatus = 'not_configured';
@@ -712,7 +856,7 @@ app.post('/api/orders', async (req, res) => {
         }
         
         res.status(201).json({
-            orderId: result.lastID,
+            orderId,
             status: 'received',
             sms: smsStatus,
             summary: {
