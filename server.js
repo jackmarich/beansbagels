@@ -872,9 +872,17 @@ app.post('/api/orders', async (req, res) => {
     }
 });
 
-// Serve the main page
+// Serve the main pages
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/kitchen.html', (req, res) => {
+    res.sendFile(__dirname + '/kitchen.html');
+});
+
+app.get('/order.html', (req, res) => {
+    res.sendFile(__dirname + '/order.html');
 });
 
 // Start server
