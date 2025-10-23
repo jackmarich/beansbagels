@@ -428,7 +428,7 @@
           )
             .then((response) => response.json())
             .then((data) => {
-              slotSelect.innerHTML = "";
+              slotSelect.innerHTML = '<option value="">Select your time</option>';
               data.slots.forEach((slot) => {
                 const option = document.createElement("option");
                 option.value = slot.value;
