@@ -719,11 +719,11 @@ app.get('/api/slots', async (req, res) => {
 
             // Special case: Block all slots after 11:00 AM for Sunday this weekend
             const isSundayAfter11 = day === 'Sunday' && (
-                slot === '11:00-11:30' || 
-                slot === '11:30-12:00' || 
-                slot === '12:00-12:30' || 
-                slot === '12:30-13:00' || 
-                slot === '13:00-13:30' || 
+                slot === '11:00-11:30' ||
+                slot === '11:30-12:00' ||
+                slot === '12:00-12:30' ||
+                slot === '12:30-13:00' ||
+                slot === '13:00-13:30' ||
                 slot === '13:30-14:00'
             );
 
