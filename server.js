@@ -569,6 +569,44 @@ app.delete('/api/manage/orders/:id', requireAuth, async (req, res) => {
     }
 });
 
+// Debug endpoint to check Sunday orders
+app.get('/api/debug/sunday-orders', async (req, res) => {
+    try {
+        const weekKey = getWeekKey();
+        
+        if (isProduction) {
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('day', 'Sunday')
+                .eq('week_key', weekKey)
+                .order('slot');
+            
+            if (error) {
+                console.error('Supabase error:', error);
+                return res.status(500).json({ error: 'Database error' });
+            }
+            
+            res.json({ orders: data, weekKey });
+        } else {
+            db.all(
+                'SELECT * FROM orders WHERE day = ? AND week_key = ? ORDER BY slot',
+                ['Sunday', weekKey],
+                (err, rows) => {
+                    if (err) {
+                        console.error('Database error:', err);
+                        return res.status(500).json({ error: 'Database error' });
+                    }
+                    res.json({ orders: rows, weekKey });
+                }
+            );
+        }
+    } catch (error) {
+        console.error('Debug error:', error);
+        res.status(500).json({ error: 'Debug error' });
+    }
+});
+
 // Reset weekend orders (delete all orders for current week)
 app.post('/api/manage/reset-weekend', requireAuth, async (req, res) => {
     const weekKey = getWeekKey();
@@ -717,20 +755,10 @@ app.get('/api/slots', async (req, res) => {
                 count = result.count;
             }
 
-            // Special case: Block all slots after 11:00 AM for Sunday this weekend
-            const isSundayAfter11 = day === 'Sunday' && (
-                slot === '11:00-11:30' ||
-                slot === '11:30-12:00' ||
-                slot === '12:00-12:30' ||
-                slot === '12:30-13:00' ||
-                slot === '13:00-13:30' ||
-                slot === '13:30-14:00'
-            );
-
             results.push({
                 label: slot.replace('-', '–'),
                 value: slot,
-                soldOut: count >= 6 || isSundayAfter11
+                soldOut: count >= 6
             });
         }
 
