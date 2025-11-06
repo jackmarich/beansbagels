@@ -62,6 +62,16 @@
         </div>
 
         <div class="form-container">
+          <div
+            id="ordersClosedMessage"
+            class="orders-closed-message"
+            style="display: none"
+          >
+            <p>
+              <strong>Orders are currently closed.</strong> Please check back
+              later.
+            </p>
+          </div>
           <form id="orderForm">
             <!-- Customer Information -->
             <fieldset class="form-section">
@@ -124,7 +134,7 @@
                 <label class="radio-label">
                   <input type="radio" name="item" value="sandwich" required />
                   <span class="radio-custom"></span>
-                  Breakfast Sandwich ($8 + $1 hashbrown; +$2 double meat)
+                  Breakfast Sandwich ($9 + $1 hashbrown; +$2 double meat)
                 </label>
               </div>
             </fieldset>
@@ -403,6 +413,9 @@
         const successMessage = document.getElementById("successMessage");
         const errorMessage = document.getElementById("errorMessage");
         const errorText = document.getElementById("errorText");
+        const ordersClosedMessage = document.getElementById(
+          "ordersClosedMessage"
+        );
 
         // Handle day and item changes to refresh time slots
         function refreshSlots() {
@@ -428,7 +441,23 @@
           )
             .then((response) => response.json())
             .then((data) => {
-              slotSelect.innerHTML = '<option value="">Select your time</option>';
+              if (data.ordersClosed) {
+                slotSelect.innerHTML =
+                  '<option value="">Orders are currently closed</option>';
+                slotSelect.disabled = true;
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Orders Closed";
+                ordersClosedMessage.style.display = "block";
+                return;
+              }
+
+              slotSelect.innerHTML =
+                '<option value="">Select your time</option>';
+              slotSelect.disabled = false;
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Place Order";
+              ordersClosedMessage.style.display = "none";
+
               data.slots.forEach((slot) => {
                 const option = document.createElement("option");
                 option.value = slot.value;

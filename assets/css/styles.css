@@ -1338,3 +1338,22 @@ textarea {
     padding: 0.5rem 1.5rem;
   }
 }
+
+/* ======================
+   Orders Closed Message
+   ====================== */
+.orders-closed-message {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.orders-closed-message p {
+  margin: 0;
+  font-size: 1.1rem;
+}

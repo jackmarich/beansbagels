@@ -23,6 +23,9 @@ app.use(express.static(__dirname));
 const KITCHEN_PASSWORD = 'lafayette';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'beansbagels-secret-key';
 
+// Order control - set to 'false' to close all orders
+const ORDERS_OPEN = process.env.ORDERS_OPEN !== 'false';
+
 // Database setup - use SQLite for local development, Supabase for production
 const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
 let db = null;
@@ -94,13 +97,13 @@ async function createTables() {
 
                     // Insert default time slots
                     const saturdaySlots = [
-                        '10:00-10:30', '10:30-11:00', '11:00-11:30', '11:30-12:00',
-                        '12:00-12:30', '12:30-13:00', '13:00-13:30', '13:30-14:00'
+                        '9:00-9:30', '9:30-10:00', '10:00-10:30', '10:30-11:00',
+                        '11:00-11:30', '11:30-12:00', '12:00-12:30', '12:30-13:00'
                     ];
 
                     const sundaySlots = [
-                        '10:00-10:30', '10:30-11:00', '11:30-12:00', '12:00-12:30',
-                        '12:30-13:00', '13:00-13:30', '13:30-14:00'
+                        '9:00-9:30', '9:30-10:00', '10:30-11:00', '11:00-11:30',
+                        '11:30-12:00', '12:00-12:30', '12:30-13:00'
                     ];
 
                     // Insert Saturday slots
@@ -200,7 +203,7 @@ function calculateOrderTotal(item, options) {
             total += 100; // +$1.00 for hash brown
         }
     } else if (item === 'sandwich') {
-        total = 700; // $7.00 base price
+        total = 900; // $9.00 base price
         if (options.extraMeat && options.extraMeat !== 'none') {
             total += 200; // +$2.00 for extra meat
         }
@@ -573,7 +576,7 @@ app.delete('/api/manage/orders/:id', requireAuth, async (req, res) => {
 app.get('/api/debug/sunday-orders', async (req, res) => {
     try {
         const weekKey = getWeekKey();
-        
+
         if (isProduction) {
             const { data, error } = await supabase
                 .from('orders')
@@ -581,12 +584,12 @@ app.get('/api/debug/sunday-orders', async (req, res) => {
                 .eq('day', 'Sunday')
                 .eq('week_key', weekKey)
                 .order('slot');
-            
+
             if (error) {
                 console.error('Supabase error:', error);
                 return res.status(500).json({ error: 'Database error' });
             }
-            
+
             res.json({ orders: data, weekKey });
         } else {
             db.all(
@@ -656,8 +659,8 @@ app.get('/api/manage/slots', requireAuth, async (req, res) => {
 
     try {
         const slots = [
-            '10:00-10:30', '10:30-11:00', '11:00-11:30', '11:30-12:00',
-            '12:00-12:30', '12:30-13:00', '13:00-13:30', '13:30-14:00'
+            '9:00-9:30', '9:30-10:00', '10:00-10:30', '10:30-11:00',
+            '11:00-11:30', '11:30-12:00', '12:00-12:30', '12:30-13:00'
         ];
 
         const results = [];
@@ -716,10 +719,31 @@ app.get('/api/slots', async (req, res) => {
         return res.status(400).json({ error: 'Day and item are required' });
     }
 
+    // If orders are closed, return all slots as sold out
+    if (!ORDERS_OPEN) {
+        const slots = [
+            '9:00-9:30', '9:30-10:00', '10:00-10:30', '10:30-11:00',
+            '11:00-11:30', '11:30-12:00', '12:00-12:30', '12:30-13:00'
+        ];
+
+        const results = slots.map(slot => ({
+            label: slot.replace('-', '–'),
+            value: slot,
+            soldOut: true
+        }));
+
+        return res.json({
+            day,
+            item,
+            slots: results,
+            ordersClosed: true
+        });
+    }
+
     try {
         const slots = [
-            '10:00-10:30', '10:30-11:00', '11:00-11:30', '11:30-12:00',
-            '12:00-12:30', '12:30-13:00', '13:00-13:30', '13:30-14:00'
+            '9:00-9:30', '9:30-10:00', '10:00-10:30', '10:30-11:00',
+            '11:00-11:30', '11:30-12:00', '12:00-12:30', '12:30-13:00'
         ];
 
         const results = [];
@@ -775,6 +799,14 @@ app.get('/api/slots', async (req, res) => {
 
 // POST /api/orders - Create a new order
 app.post('/api/orders', async (req, res) => {
+    // Check if orders are open
+    if (!ORDERS_OPEN) {
+        return res.status(503).json({
+            error: 'ORDERS_CLOSED',
+            message: 'Orders are currently closed. Please check back later.'
+        });
+    }
+
     const { name, building_room, day, slot, item, options, notes, phone, payment_ready } = req.body;
 
     // Validate required fields
